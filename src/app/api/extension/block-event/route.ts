@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { checkAndAlert } from "@/app/api/alerts/route";
 
 async function resolveUserId(authHeader: string | null): Promise<string | null> {
   if (!authHeader?.startsWith("Bearer ")) return null;
@@ -57,6 +58,9 @@ export async function POST(req: Request) {
     console.error("Block event insert error:", error);
     return NextResponse.json({ error: "DB error" }, { status: 500 });
   }
+
+  // Auto-alert trusted person if too many blocks in 1 hour
+  checkAndAlert(userId).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

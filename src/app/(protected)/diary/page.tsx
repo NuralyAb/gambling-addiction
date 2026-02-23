@@ -69,11 +69,7 @@ function formatDate(d: string) {
 }
 
 function formatMoney(n: number) {
-  return new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "RUB",
-    maximumFractionDigits: 0,
-  }).format(n);
+  return new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 }).format(n) + " ₸";
 }
 
 // ── Page ──

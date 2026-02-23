@@ -99,18 +99,32 @@ function formatDate(dateStr: string) {
 }
 
 function formatMoney(amount: number) {
-  return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(amount);
+  return new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 }).format(amount) + " ₸";
+}
+
+interface PredictData {
+  relapseRisk: number;
+  riskLevel: string;
+  trend: string;
+  warnings: string[];
+  recommendations: string[];
 }
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [predict, setPredict] = useState<PredictData | null>(null);
   const [loading, setLoading] = useState(true);
   const quote = getDailyQuote();
 
   useEffect(() => {
-    fetch("/api/dashboard")
-      .then((r) => r.json())
-      .then(setData)
+    Promise.all([
+      fetch("/api/dashboard").then((r) => r.json()),
+      fetch("/api/ai/predict-risk").then((r) => r.json()).catch(() => null),
+    ])
+      .then(([dashData, predictData]) => {
+        setData(dashData);
+        setPredict(predictData);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -271,8 +285,86 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
+      {/* SOS + AI Prediction row */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* SOS Button */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <Link href="/sos">
+            <Card className="h-full group cursor-pointer hover:border-red-500/30 transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
+                  <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-lg font-semibold text-white">Мне нужна помощь</div>
+                  <div className="text-sm text-slate-400">Дыхание, таймер, заземление — справиться с желанием играть</div>
+                </div>
+              </div>
+            </Card>
+          </Link>
+        </motion.div>
+
+        {/* AI Prediction */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <Card className="h-full">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm text-slate-400">AI-прогноз риска</span>
+              {predict && (
+                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                  predict.riskLevel === "HIGH" ? "text-red-400 bg-red-500/10" :
+                  predict.riskLevel === "MEDIUM" ? "text-yellow-400 bg-yellow-500/10" :
+                  "text-green-400 bg-green-500/10"
+                }`}>
+                  {predict.trend === "increasing" ? "Растёт" : predict.trend === "decreasing" ? "Снижается" : "Стабильно"}
+                </span>
+              )}
+            </div>
+            {predict ? (
+              <>
+                <div className="flex items-end gap-3 mb-3">
+                  <span className={`text-3xl font-bold ${
+                    predict.riskLevel === "HIGH" ? "text-red-400" :
+                    predict.riskLevel === "MEDIUM" ? "text-yellow-400" : "text-green-400"
+                  }`}>{predict.relapseRisk}</span>
+                  <span className="text-slate-500 text-sm mb-1">/100</span>
+                </div>
+                <div className="h-2 bg-dark rounded-full overflow-hidden mb-3">
+                  <motion.div
+                    className={`h-full rounded-full ${
+                      predict.riskLevel === "HIGH" ? "bg-red-400" :
+                      predict.riskLevel === "MEDIUM" ? "bg-yellow-400" : "bg-green-400"
+                    }`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${predict.relapseRisk}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                  />
+                </div>
+                {predict.warnings.length > 0 && (
+                  <div className="space-y-1">
+                    {predict.warnings.slice(0, 2).map((w, i) => (
+                      <div key={i} className="text-xs text-slate-400 flex items-center gap-1.5">
+                        <span className="text-yellow-400">!</span> {w}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {predict.recommendations.length > 0 && predict.warnings.length === 0 && (
+                  <div className="text-xs text-green-400/80">
+                    {predict.recommendations[0]}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-slate-500 text-sm">Загрузка прогноза...</div>
+            )}
+          </Card>
+        </motion.div>
+      </div>
+
       {/* Diary entries */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">Последние записи в дневнике</h2>

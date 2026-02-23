@@ -153,7 +153,7 @@ export async function sendWeeklyReport(
     ``,
     `${emoji} <b>Риск-скор: ${data.riskScore}/100</b> (${riskLabel})`,
     ``,
-    hasActivity ? `💰 Ставок/депозитов: $${data.totalAmount.toFixed(0)}` : `💰 Ставок/депозитов: $0`,
+    hasActivity ? `💰 Ставок/депозитов: ${data.totalAmount.toFixed(0)} ₸` : `💰 Ставок/депозитов: 0 ₸`,
     `🎰 Сессий: ${data.totalSessions}`,
     hasActivity ? `⏱ Общее время: ${formatMinutes(data.totalTimeMinutes)}` : `⏱ Общее время: 0м`,
     `🌙 Ночных сессий: ${data.nightSessions}`,
