@@ -18,6 +18,13 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Колонки Telegram (для регистрации и доверенного лица)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS tg_username TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS tg_chat_id BIGINT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS trusted_person_tg TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS trusted_person_chat_id BIGINT;
+CREATE INDEX IF NOT EXISTS idx_users_trusted_person_tg ON users(trusted_person_tg);
+
 -- Индексы
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token);

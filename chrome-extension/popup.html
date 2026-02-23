@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 340px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f1419;
+      color: #e2e8f0;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0f1419, #1a2332);
+      padding: 16px;
+      border-bottom: 1px solid #2d3748;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header .icon {
+      width: 36px; height: 36px;
+      background: rgba(34, 211, 238, 0.1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header .icon svg { width: 20px; height: 20px; color: #22d3ee; }
+    .header h1 { font-size: 15px; font-weight: 700; }
+    .header p { font-size: 11px; color: #64748b; }
+
+    .content { padding: 16px; }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .status-bar.connected {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+    }
+    .status-bar.disconnected {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-bar.connected .status-dot { background: #4ade80; }
+    .status-bar.disconnected .status-dot { background: #f87171; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: #1a2332;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-card .number { font-size: 22px; font-weight: 700; color: #22d3ee; }
+    .stat-card .label { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+    .section { margin-bottom: 16px; }
+    .section-title { font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+    input[type="text"] {
+      flex: 1;
+      background: #1a2332;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      color: #e2e8f0;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-family: 'SF Mono', monospace;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type="text"]:focus { border-color: #22d3ee; }
+    input[type="text"]::placeholder { color: #475569; }
+
+    button {
+      background: #22d3ee;
+      color: #0f1419;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #06b6d4; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.secondary {
+      background: #1a2332;
+      border: 1px solid #2d3748;
+      color: #94a3b8;
+    }
+    button.secondary:hover { background: #2d3748; color: #e2e8f0; }
+    button.danger { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    button.danger:hover { background: rgba(239, 68, 68, 0.25); }
+    .btn-full { width: 100%; }
+
+    .msg { font-size: 11px; padding: 6px 10px; border-radius: 6px; margin-top: 8px; }
+    .msg.error { background: rgba(239,68,68,0.1); color: #f87171; }
+    .msg.success { background: rgba(34,197,94,0.1); color: #4ade80; }
+
+    .footer {
+      padding: 12px 16px;
+      border-top: 1px solid #2d3748;
+      text-align: center;
+    }
+    .footer a {
+      font-size: 11px;
+      color: #22d3ee;
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="icon">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+      </svg>
+    </div>
+    <div>
+      <h1>SafeBet Shield</h1>
+      <p>Защита от азартных сайтов</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="statusBar" class="status-bar disconnected">
+      <div class="status-dot"></div>
+      <span id="statusText">Не подключено</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="number" id="todayCount">0</div>
+        <div class="label">Сегодня</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="weekCount">0</div>
+        <div class="label">Неделя</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="monthCount">0</div>
+        <div class="label">Месяц</div>
+      </div>
+    </div>
+
+    <div id="connectSection" class="section">
+      <div class="section-title">Подключение</div>
+      <div class="input-group">
+        <input type="text" id="tokenInput" placeholder="sba_..." />
+        <button id="connectBtn">Подключить</button>
+      </div>
+      <div id="connectMsg"></div>
+    </div>
+
+    <div id="connectedSection" class="section" style="display:none">
+      <div class="section-title">Управление</div>
+      <button id="disconnectBtn" class="btn-full danger">Отключить расширение</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a id="dashboardLink" href="#">Открыть панель управления</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

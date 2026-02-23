@@ -37,6 +37,10 @@ CREATE TABLE users (
   risk_score INTEGER DEFAULT 0 CHECK (risk_score >= 0 AND risk_score <= 100),
   email_verified BOOLEAN DEFAULT FALSE,
   pgsi_completed BOOLEAN DEFAULT FALSE,
+  tg_username TEXT,
+  tg_chat_id BIGINT,
+  trusted_person_tg TEXT,
+  trusted_person_chat_id BIGINT,
   verification_token TEXT,
   reset_token TEXT,
   reset_token_expires TIMESTAMPTZ,
@@ -47,6 +51,7 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_verification_token ON users(verification_token);
 CREATE INDEX idx_users_reset_token ON users(reset_token);
+CREATE INDEX idx_users_trusted_person_tg ON users(trusted_person_tg);
 
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$

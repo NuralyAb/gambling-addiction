@@ -10,9 +10,11 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [tgUsername, setTgUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [warning, setWarning] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +30,19 @@ export default function RegisterPage() {
       return;
     }
 
+    const tg = (tgUsername || "").replace(/^@/, "").trim();
+    if (!tg) {
+      setError("Telegram username обязателен");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, tg_username: tg }),
       });
 
       const data = await res.json();
@@ -44,6 +52,7 @@ export default function RegisterPage() {
         return;
       }
 
+      setWarning(data.warning || "");
       setSuccess(true);
     } catch {
       setError("Ошибка соединения с сервером");
@@ -66,6 +75,11 @@ export default function RegisterPage() {
             Мы отправили письмо с ссылкой для подтверждения на <strong className="text-slate-200">{email}</strong>.
             Проверьте папку &quot;Спам&quot;, если письмо не пришло.
           </p>
+          {warning && (
+            <div className="mb-6 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-200 text-sm text-left">
+              {warning}
+            </div>
+          )}
           <Link href="/login">
             <Button variant="secondary" className="w-full">Перейти к входу</Button>
           </Link>
@@ -103,15 +117,24 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <Input
-            id="confirmPassword"
-            label="Подтвердите пароль"
-            type="password"
-            placeholder="Повторите пароль"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+            <Input
+              id="confirmPassword"
+              label="Подтвердите пароль"
+              type="password"
+              placeholder="Повторите пароль"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <Input
+              id="tgUsername"
+              label="Telegram username"
+              type="text"
+              placeholder="@username"
+              value={tgUsername}
+              onChange={(e) => setTgUsername(e.target.value)}
+              required
+            />
 
           {error && (
             <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">

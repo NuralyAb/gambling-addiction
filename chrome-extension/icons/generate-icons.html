@@ -1,0 +1,40 @@
+<!-- Open this in a browser, right-click each canvas, "Save image as" icon16.png / icon48.png / icon128.png -->
+<canvas id="c16" width="16" height="16"></canvas>
+<canvas id="c48" width="48" height="48"></canvas>
+<canvas id="c128" width="128" height="128"></canvas>
+<script>
+function draw(id, size) {
+  const c = document.getElementById(id).getContext("2d");
+  // Background
+  c.fillStyle = "#0f1419";
+  c.beginPath();
+  c.roundRect(0, 0, size, size, size * 0.2);
+  c.fill();
+  // Shield
+  const cx = size / 2, cy = size / 2;
+  const s = size * 0.35;
+  c.fillStyle = "#22d3ee";
+  c.beginPath();
+  c.moveTo(cx, cy - s);
+  c.lineTo(cx + s * 0.8, cy - s * 0.5);
+  c.lineTo(cx + s * 0.8, cy + s * 0.2);
+  c.quadraticCurveTo(cx, cy + s, cx, cy + s);
+  c.quadraticCurveTo(cx, cy + s, cx - s * 0.8, cy + s * 0.2);
+  c.lineTo(cx - s * 0.8, cy - s * 0.5);
+  c.closePath();
+  c.fill();
+  // Check
+  c.strokeStyle = "#0f1419";
+  c.lineWidth = size * 0.06;
+  c.lineCap = "round";
+  c.lineJoin = "round";
+  c.beginPath();
+  c.moveTo(cx - s * 0.25, cy);
+  c.lineTo(cx - s * 0.05, cy + s * 0.2);
+  c.lineTo(cx + s * 0.3, cy - s * 0.2);
+  c.stroke();
+}
+draw("c16", 16);
+draw("c48", 48);
+draw("c128", 128);
+</script>

@@ -8,16 +8,20 @@ import { z } from "zod";
 const registerSchema = z.object({
   email: z.string().email("Некорректный email"),
   password: z.string().min(8, "Пароль минимум 8 символов"),
+  tg_username: z
+    .string()
+    .transform((s) => (s || "").replace(/^@/, "").trim())
+    .refine((s) => s.length >= 1, "Telegram username обязателен")
+    .refine((s) => s.length <= 32, "Слишком длинный username"),
 });
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password } = registerSchema.parse(body);
+    const { email, password, tg_username } = registerSchema.parse(body);
 
     const normalizedEmail = email.toLowerCase();
 
-    // Check if user exists
     const { data: existingUser } = await supabase
       .from("users")
       .select("id")
@@ -40,22 +44,21 @@ export async function POST(req: Request) {
       verification_token: verificationToken,
       email_verified: false,
       risk_score: 0,
+      tg_username,
     });
 
     if (error) {
       console.error("Supabase insert error:", error);
       return NextResponse.json(
-        { error: "Ошибка при создании аккаунта" },
+        { error: error.message || "Ошибка при создании аккаунта" },
         { status: 500 }
       );
     }
 
-    // Send verification email
     try {
       await sendVerificationEmail(normalizedEmail, verificationToken);
     } catch (emailError) {
       console.error("Email send error:", emailError);
-      // Don't block registration if email fails
     }
 
     return NextResponse.json(
@@ -70,9 +73,8 @@ export async function POST(req: Request) {
       );
     }
     console.error("Register error:", error);
-    return NextResponse.json(
-      { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error ? error.message : "Внутренняя ошибка сервера";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
