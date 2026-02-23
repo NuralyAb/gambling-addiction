@@ -37,6 +37,10 @@ export default function ProfilePage() {
   const [trustedEmail, setTrustedEmail] = useState("");
   const [trustedTg, setTrustedTg] = useState("");
   const [tgUsername, setTgUsername] = useState("");
+  const [exportLoading, setExportLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadProfile = () => {
     fetch("/api/profile")
@@ -187,6 +191,48 @@ export default function ProfilePage() {
       showErr("Ошибка отправки отчёта");
     } finally {
       setReportLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    setExportLoading(true);
+    try {
+      const res = await fetch("/api/account/export");
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `safebet-export-${new Date().toISOString().split("T")[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showMsg("Данные экспортированы");
+    } catch {
+      showErr("Ошибка экспорта данных");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") return;
+    setDeleteLoading(true);
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmation: "DELETE" }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        showErr(data.error || "Ошибка удаления");
+        return;
+      }
+      window.location.href = "/login";
+    } catch {
+      showErr("Ошибка удаления аккаунта");
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -417,6 +463,104 @@ export default function ProfilePage() {
           Сохранить изменения
         </Button>
       </form>
+
+      {/* Data & Privacy */}
+      <Card>
+        <h2 className="text-lg font-semibold text-white mb-2">Данные и конфиденциальность</h2>
+        <p className="text-sm text-slate-500 mb-4">
+          Управление вашими данными в соответствии с GDPR
+        </p>
+
+        <div className="space-y-3">
+          <button
+            onClick={handleExportData}
+            disabled={exportLoading}
+            className="w-full flex items-center justify-between p-3 rounded-lg bg-dark-lighter border border-dark-border hover:border-accent/30 transition-colors text-left"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">📦</span>
+              <div>
+                <p className="text-sm font-medium text-white">Экспорт данных</p>
+                <p className="text-xs text-slate-500">Скачать все ваши данные в JSON</p>
+              </div>
+            </div>
+            {exportLoading ? (
+              <div className="w-5 h-5 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+            ) : (
+              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            )}
+          </button>
+
+          <a
+            href="/privacy"
+            className="w-full flex items-center justify-between p-3 rounded-lg bg-dark-lighter border border-dark-border hover:border-accent/30 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🔒</span>
+              <div>
+                <p className="text-sm font-medium text-white">Политика конфиденциальности</p>
+                <p className="text-xs text-slate-500">Как мы храним и обрабатываем ваши данные</p>
+              </div>
+            </div>
+            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </Card>
+
+      {/* Danger Zone */}
+      <Card className="!border-red-500/20">
+        <h2 className="text-lg font-semibold text-red-400 mb-2">Опасная зона</h2>
+        <p className="text-sm text-slate-500 mb-4">
+          Удаление аккаунта необратимо. Все данные будут удалены навсегда.
+        </p>
+
+        {!showDeleteConfirm ? (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="!border-red-500/30 !text-red-400 hover:!bg-red-500/10"
+          >
+            Удалить аккаунт
+          </Button>
+        ) : (
+          <div className="space-y-3 p-4 bg-red-500/5 border border-red-500/20 rounded-lg">
+            <p className="text-sm text-red-400 font-medium">
+              Вы уверены? Введите DELETE для подтверждения:
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="DELETE"
+              className="w-full px-3 py-2 bg-dark border border-red-500/30 rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
+            />
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}
+                className="flex-1"
+              >
+                Отмена
+              </Button>
+              <Button
+                type="button"
+                loading={deleteLoading}
+                disabled={deleteConfirmText !== "DELETE"}
+                onClick={handleDeleteAccount}
+                className="flex-1 !bg-red-500 hover:!bg-red-600 disabled:!bg-red-500/30"
+              >
+                Удалить навсегда
+              </Button>
+            </div>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

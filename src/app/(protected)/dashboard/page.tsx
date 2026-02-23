@@ -285,83 +285,158 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* SOS + AI Prediction row */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* SOS Button */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-          <Link href="/sos">
-            <Card className="h-full group cursor-pointer hover:border-red-500/30 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
-                  <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
+      {/* SOS Button */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+        <Link href="/sos">
+          <Card className="group cursor-pointer hover:border-red-500/30 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
+                <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-white">Мне нужна помощь</div>
+                <div className="text-sm text-slate-400">Дыхание, таймер, заземление — справиться с желанием играть</div>
+              </div>
+            </div>
+          </Card>
+        </Link>
+      </motion.div>
+
+      {/* AI Analysis Hub */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🧠</span>
+              <h2 className="text-lg font-semibold text-white">AI-анализ</h2>
+            </div>
+            <Link href="/about-ai" className="text-xs text-accent hover:underline">
+              Как это работает
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-4">
+            {/* Risk Prediction */}
+            <div className="bg-dark-lighter rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <span className="text-xs">🔮</span>
                 </div>
                 <div>
-                  <div className="text-lg font-semibold text-white">Мне нужна помощь</div>
-                  <div className="text-sm text-slate-400">Дыхание, таймер, заземление — справиться с желанием играть</div>
+                  <p className="text-xs font-medium text-slate-300">Нейросеть</p>
+                  <p className="text-[10px] text-slate-500">brain.js</p>
                 </div>
               </div>
-            </Card>
-          </Link>
-        </motion.div>
-
-        {/* AI Prediction */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Card className="h-full">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-slate-400">AI-прогноз риска</span>
-              {predict && (
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  predict.riskLevel === "HIGH" ? "text-red-400 bg-red-500/10" :
-                  predict.riskLevel === "MEDIUM" ? "text-yellow-400 bg-yellow-500/10" :
-                  "text-green-400 bg-green-500/10"
-                }`}>
-                  {predict.trend === "increasing" ? "Растёт" : predict.trend === "decreasing" ? "Снижается" : "Стабильно"}
-                </span>
+              {predict ? (
+                <>
+                  <div className="flex items-end gap-1 mb-2">
+                    <span className={`text-2xl font-bold ${
+                      predict.riskLevel === "HIGH" ? "text-red-400" :
+                      predict.riskLevel === "MEDIUM" ? "text-yellow-400" : "text-green-400"
+                    }`}>{predict.relapseRisk}</span>
+                    <span className="text-slate-500 text-xs mb-1">/100</span>
+                  </div>
+                  <div className="h-1.5 bg-dark rounded-full overflow-hidden mb-2">
+                    <motion.div
+                      className={`h-full rounded-full ${
+                        predict.riskLevel === "HIGH" ? "bg-red-400" :
+                        predict.riskLevel === "MEDIUM" ? "bg-yellow-400" : "bg-green-400"
+                      }`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${predict.relapseRisk}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                    />
+                  </div>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                    predict.riskLevel === "HIGH" ? "text-red-400 bg-red-500/10" :
+                    predict.riskLevel === "MEDIUM" ? "text-yellow-400 bg-yellow-500/10" :
+                    "text-green-400 bg-green-500/10"
+                  }`}>
+                    {predict.trend === "increasing" ? "↑ Растёт" : predict.trend === "decreasing" ? "↓ Снижается" : "→ Стабильно"}
+                  </span>
+                </>
+              ) : (
+                <div className="text-slate-500 text-xs">Нет данных</div>
               )}
             </div>
-            {predict ? (
-              <>
-                <div className="flex items-end gap-3 mb-3">
-                  <span className={`text-3xl font-bold ${
-                    predict.riskLevel === "HIGH" ? "text-red-400" :
-                    predict.riskLevel === "MEDIUM" ? "text-yellow-400" : "text-green-400"
-                  }`}>{predict.relapseRisk}</span>
-                  <span className="text-slate-500 text-sm mb-1">/100</span>
+
+            {/* Sentiment */}
+            <div className="bg-dark-lighter rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                  <span className="text-xs">💬</span>
                 </div>
-                <div className="h-2 bg-dark rounded-full overflow-hidden mb-3">
-                  <motion.div
-                    className={`h-full rounded-full ${
-                      predict.riskLevel === "HIGH" ? "bg-red-400" :
-                      predict.riskLevel === "MEDIUM" ? "bg-yellow-400" : "bg-green-400"
-                    }`}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${predict.relapseRisk}%` }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                  />
+                <div>
+                  <p className="text-xs font-medium text-slate-300">NLP-анализ</p>
+                  <p className="text-[10px] text-slate-500">sentiment</p>
                 </div>
-                {predict.warnings.length > 0 && (
-                  <div className="space-y-1">
-                    {predict.warnings.slice(0, 2).map((w, i) => (
-                      <div key={i} className="text-xs text-slate-400 flex items-center gap-1.5">
-                        <span className="text-yellow-400">!</span> {w}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {predict.recommendations.length > 0 && predict.warnings.length === 0 && (
-                  <div className="text-xs text-green-400/80">
-                    {predict.recommendations[0]}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-slate-500 text-sm">Загрузка прогноза...</div>
-            )}
-          </Card>
-        </motion.div>
-      </div>
+              </div>
+              {predict && predict.warnings.length > 0 ? (
+                <div className="space-y-1.5">
+                  {predict.warnings.slice(0, 2).map((w, i) => (
+                    <div key={i} className="text-[11px] text-slate-400 flex items-start gap-1">
+                      <span className="text-yellow-400 mt-0.5 shrink-0">⚠</span>
+                      <span className="line-clamp-2">{w}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs text-green-400/80 flex items-center gap-1.5">
+                  <span>✓</span> Эмоциональный фон стабильный
+                </div>
+              )}
+            </div>
+
+            {/* Anomaly Detection */}
+            <div className="bg-dark-lighter rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <span className="text-xs">📊</span>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-slate-300">Детектор</p>
+                  <p className="text-[10px] text-slate-500">Z-score</p>
+                </div>
+              </div>
+              {predict?.recommendations && predict.recommendations.length > 0 ? (
+                <div className="text-[11px] text-slate-400 space-y-1.5">
+                  {predict.recommendations.slice(0, 2).map((r, i) => (
+                    <div key={i} className="flex items-start gap-1">
+                      <span className="text-accent mt-0.5 shrink-0">→</span>
+                      <span className="line-clamp-2">{r}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs text-green-400/80 flex items-center gap-1.5">
+                  <span>✓</span> Аномалий не обнаружено
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* AI modules badge */}
+          <div className="mt-4 pt-3 border-t border-dark-border flex items-center justify-between">
+            <div className="flex items-center gap-3 text-[10px] text-slate-500">
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Нейросеть
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                NLP
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                Аномалии
+              </span>
+            </div>
+            <span className="text-[10px] text-slate-600">3 независимых AI-модуля</span>
+          </div>
+        </Card>
+      </motion.div>
 
       {/* Diary entries */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
