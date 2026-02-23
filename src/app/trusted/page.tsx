@@ -49,18 +49,21 @@ function riskBadge(level: string, score: number) {
   if (level === "HIGH" || score >= 61)
     return (
       <span className={`${base} bg-red-500/20 text-red-400`}>
-        🔴 Высокий {score}
+        <span className="w-2 h-2 rounded-full bg-current shrink-0" aria-hidden />
+        Высокий {score}
       </span>
     );
   if (level === "MEDIUM" || score >= 31)
     return (
       <span className={`${base} bg-yellow-500/20 text-yellow-400`}>
-        🟡 Средний {score}
+        <span className="w-2 h-2 rounded-full bg-current shrink-0" aria-hidden />
+        Средний {score}
       </span>
     );
   return (
     <span className={`${base} bg-green-500/20 text-green-400`}>
-      🟢 Низкий {score}
+      <span className="w-2 h-2 rounded-full bg-current shrink-0" aria-hidden />
+      Низкий {score}
     </span>
   );
 }
@@ -504,9 +507,10 @@ export default function TrustedDashboardPage() {
                       </h2>
                       <button
                         onClick={() => setActiveTab("requests")}
-                        className="text-xs text-accent hover:text-accent-hover transition-colors"
+                        className="text-xs text-accent hover:text-accent-hover transition-colors inline-flex items-center gap-1"
                       >
-                        Все запросы →
+                        Все запросы
+                        <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                       </button>
                     </div>
                     <p className="text-xs text-slate-500 mb-4">
@@ -538,9 +542,10 @@ export default function TrustedDashboardPage() {
                       </h2>
                       <button
                         onClick={() => setActiveTab("reports")}
-                        className="text-xs text-accent hover:text-accent-hover transition-colors"
+                        className="text-xs text-accent hover:text-accent-hover transition-colors inline-flex items-center gap-1"
                       >
-                        Все отчёты →
+                        Все отчёты
+                        <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                       </button>
                     </div>
                     <ReportCard report={weeklyReports[0]} />
@@ -555,21 +560,33 @@ export default function TrustedDashboardPage() {
                     </svg>
                     Как это работает
                   </h2>
-                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="grid sm:grid-cols-2 gap-3">
                     <div className="p-3 bg-slate-800/50 rounded-lg">
-                      <p className="text-xs font-medium text-slate-300 mb-1">📊 Еженедельные отчёты</p>
+                      <p className="text-xs font-medium text-slate-300 mb-1 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        Еженедельные отчёты
+                      </p>
                       <p className="text-[11px] text-slate-500">Вы получаете анализ активности с риск-скором. Отчёты приходят в Telegram и отображаются здесь.</p>
                     </div>
                     <div className="p-3 bg-slate-800/50 rounded-lg">
-                      <p className="text-xs font-medium text-slate-300 mb-1">🔐 Dual-control блокировка</p>
+                      <p className="text-xs font-medium text-slate-300 mb-1 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        Dual-control блокировка
+                      </p>
                       <p className="text-[11px] text-slate-500">Пользователь не может снять блокировку самостоятельно. Требуется ваше одобрение.</p>
                     </div>
                     <div className="p-3 bg-slate-800/50 rounded-lg">
-                      <p className="text-xs font-medium text-slate-300 mb-1">🤖 Telegram бот</p>
+                      <p className="text-xs font-medium text-slate-300 mb-1 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
+                        Telegram бот
+                      </p>
                       <p className="text-[11px] text-slate-500">Запросы и отчёты также приходят в Telegram с интерактивными кнопками.</p>
                     </div>
                     <div className="p-3 bg-slate-800/50 rounded-lg">
-                      <p className="text-xs font-medium text-slate-300 mb-1">🔄 Автообновление</p>
+                      <p className="text-xs font-medium text-slate-300 mb-1 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        Автообновление
+                      </p>
                       <p className="text-[11px] text-slate-500">Данные обновляются автоматически каждые 30 секунд. Или нажмите кнопку обновления.</p>
                     </div>
                   </div>
@@ -588,9 +605,10 @@ export default function TrustedDashboardPage() {
                     </span>
                     <button
                       onClick={() => setSelectedUserId(null)}
-                      className="text-xs text-slate-500 hover:text-slate-300 ml-1"
+                      className="text-xs text-slate-500 hover:text-slate-300 ml-1 inline-flex items-center gap-1"
                     >
-                      ✕ Сбросить
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      Сбросить
                     </button>
                   </div>
                 )}
@@ -688,9 +706,10 @@ export default function TrustedDashboardPage() {
                     </span>
                     <button
                       onClick={() => setSelectedUserId(null)}
-                      className="text-xs text-slate-500 hover:text-slate-300 ml-1"
+                      className="text-xs text-slate-500 hover:text-slate-300 ml-1 inline-flex items-center gap-1"
                     >
-                      ✕ Сбросить
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      Сбросить
                     </button>
                   </div>
                 )}
@@ -758,11 +777,12 @@ function UnlockRequestCard({
           <Button
             variant="secondary"
             size="sm"
-            className="text-red-400 border-red-500/30 hover:bg-red-500/10"
+            className="text-red-400 border-red-500/30 hover:bg-red-500/10 inline-flex items-center gap-1.5"
             loading={actionLoading === r.id + "reject"}
             onClick={() => onAction(r.id, "reject")}
           >
-            ✕ Отклонить
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            Отклонить
           </Button>
         </div>
       </div>

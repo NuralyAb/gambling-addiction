@@ -16,7 +16,7 @@ export async function GET() {
     diaryResult,
     pgsiResult,
     blockResult,
-    tokenResult,
+    ,
     chatResult,
     reportResult,
   ] = await Promise.all([

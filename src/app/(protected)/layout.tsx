@@ -11,9 +11,9 @@ export default function ProtectedLayout({
   return (
     <>
       <Navbar />
-      <div className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full flex gap-8">
+      <div className="flex-1 max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-4 lg:gap-8 px-3 sm:px-4 py-4 sm:py-6 min-w-0">
         <Sidebar />
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 overflow-x-hidden">
           <MobileNav />
           <PGSIGuard>{children}</PGSIGuard>
         </main>

@@ -44,8 +44,13 @@ export default function ProfilePage() {
 
   const loadProfile = () => {
     fetch("/api/profile")
-      .then((res) => res.json())
-      .then((data) => {
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "Ошибка загрузки профиля");
+          setProfile(null);
+          return;
+        }
         setProfile(data);
         setName(data.name || "");
         setCity(data.city || "");
@@ -55,7 +60,10 @@ export default function ProfilePage() {
         setTrustedTg(data.trusted_person_tg || "");
         setTgUsername(data.tg_username || "");
       })
-      .catch(() => setError("Ошибка загрузки профиля"))
+      .catch(() => {
+        setError("Ошибка загрузки профиля");
+        setProfile(null);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -246,6 +254,18 @@ export default function ProfilePage() {
     );
   }
 
+  if (!profile) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <h1 className="text-2xl font-bold text-white">Профиль</h1>
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
+          {error || "Не удалось загрузить профиль"}
+        </div>
+        <Button onClick={loadProfile}>Попробовать снова</Button>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
@@ -384,7 +404,10 @@ export default function ProfilePage() {
                 onClick={handleTestConnection}
                 className="flex-1"
               >
-                🔔 Тест связи
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                  Тест связи
+                </span>
               </Button>
               <Button
                 type="button"
@@ -394,7 +417,10 @@ export default function ProfilePage() {
                 onClick={handleSendReport}
                 className="flex-1"
               >
-                📊 Отправить отчёт
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                  Отправить отчёт
+                </span>
               </Button>
             </div>
             {!hasTrustedBot && profile.trusted_person_tg && (
@@ -409,7 +435,10 @@ export default function ProfilePage() {
                   loading={syncLoading}
                   onClick={handleSyncBot}
                 >
-                  🔄 Проверить подключение бота
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    Проверить подключение бота
+                  </span>
                 </Button>
               </div>
             )}
@@ -478,7 +507,9 @@ export default function ProfilePage() {
             className="w-full flex items-center justify-between p-3 rounded-lg bg-dark-lighter border border-dark-border hover:border-accent/30 transition-colors text-left"
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">📦</span>
+              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+              </div>
               <div>
                 <p className="text-sm font-medium text-white">Экспорт данных</p>
                 <p className="text-xs text-slate-500">Скачать все ваши данные в JSON</p>
@@ -498,7 +529,9 @@ export default function ProfilePage() {
             className="w-full flex items-center justify-between p-3 rounded-lg bg-dark-lighter border border-dark-border hover:border-accent/30 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">🔒</span>
+              <div className="w-10 h-10 rounded-lg bg-slate-500/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+              </div>
               <div>
                 <p className="text-sm font-medium text-white">Политика конфиденциальности</p>
                 <p className="text-xs text-slate-500">Как мы храним и обрабатываем ваши данные</p>

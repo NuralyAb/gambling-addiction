@@ -28,9 +28,9 @@ const RESOURCES = [
 
 export default function ResourcesPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-0">
       <div>
-        <h1 className="text-2xl font-bold text-white">Ресурсы</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-white">Ресурсы</h1>
         <p className="text-slate-400 mt-1">Полезные материалы и рекомендации</p>
       </div>
 

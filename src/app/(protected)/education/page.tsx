@@ -697,13 +697,14 @@ const LESSONS: Lesson[] = [
 
 function LessonQuiz({
   quiz,
-  lessonId,
   onComplete,
+  lessonId,
 }: {
   quiz: Quiz[];
   lessonId: string;
   onComplete: () => void;
 }) {
+  void lessonId; // passed by parent for semantics
   const [answers, setAnswers] = useState<(number | null)[]>(Array(quiz.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
 

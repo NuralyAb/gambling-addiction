@@ -172,7 +172,7 @@ export default function PGSITestPage() {
     const info = getRiskInfo(result.riskCategory);
 
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto min-w-0">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -283,10 +283,10 @@ export default function PGSITestPage() {
 
   // Test screen
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto min-w-0">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">
           Тест PGSI
         </h1>
         <p className="text-slate-400 text-sm">

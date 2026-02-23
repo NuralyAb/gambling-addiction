@@ -104,10 +104,10 @@ export default function ExtensionPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 min-w-0">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Chrome Расширение</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-white">Chrome Расширение</h1>
         <p className="text-slate-400 mt-1">
           Блокировка азартных сайтов и отслеживание попыток доступа
         </p>
@@ -211,11 +211,11 @@ export default function ExtensionPage() {
                       {showToken ? "Скрыть" : "Показать"}
                     </button>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 text-sm text-slate-300 bg-dark rounded px-3 py-2 font-mono break-all">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0">
+                    <code className="flex-1 min-w-0 text-sm text-slate-300 bg-dark rounded px-3 py-2 font-mono break-all">
                       {showToken ? activeToken.token : maskToken(activeToken.token)}
                     </code>
-                    <Button variant="ghost" size="sm" onClick={handleCopy}>
+                    <Button variant="ghost" size="sm" onClick={handleCopy} className="shrink-0">
                       {copied ? "Скопировано!" : "Копировать"}
                     </Button>
                   </div>
@@ -289,7 +289,7 @@ export default function ExtensionPage() {
       {tab === "stats" && (
         <div className="space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <Card className="text-center">
               <div className="text-3xl font-bold text-accent">{stats?.today ?? 0}</div>
               <div className="text-xs text-slate-500 mt-1">Сегодня</div>

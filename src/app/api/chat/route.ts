@@ -3,8 +3,6 @@ import { authOptions } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 const SYSTEM_PROMPT = `Ты — сочувствующий помощник для людей, борющихся с игровой зависимостью. Ты работаешь на платформе помощи при лудомании SafeBet AI.
 
 Правила:
@@ -19,6 +17,12 @@ const SYSTEM_PROMPT = `Ты — сочувствующий помощник дл
 - Ты помнишь контекст разговора в рамках одной сессии.
 - Отвечай кратко и по делу, не более 3-4 предложений, если не просят подробнее.`;
 
+function getOpenAI(): OpenAI | null {
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) return null;
+  return new OpenAI({ apiKey });
+}
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
@@ -28,51 +32,89 @@ export async function POST(req: Request) {
     });
   }
 
-  const userId = (session.user as { id: string }).id;
-  const { message } = await req.json();
+  const openai = getOpenAI();
+  if (!openai) {
+    return new Response(
+      JSON.stringify({ error: "Сервис AI временно недоступен. Проверьте настройки OPENAI_API_KEY." }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
-  if (!message || typeof message !== "string" || message.trim().length === 0) {
+  let body: { message?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "Неверный формат запроса" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const message = typeof body.message === "string" ? body.message.trim() : "";
+  if (!message) {
     return new Response(JSON.stringify({ error: "Пустое сообщение" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  // Save user message to DB
-  await supabase.from("chat_messages").insert({
-    user_id: userId,
-    role: "user",
-    content: message.trim(),
-  });
+  const userId = (session.user as { id: string }).id;
 
-  // Load recent chat history (last 20 messages for context)
-  const { data: history } = await supabase
-    .from("chat_messages")
-    .select("role, content")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(20);
+  // Сохраняем сообщение пользователя в БД (не блокируем чат при ошибке)
+  try {
+    await supabase.from("chat_messages").insert({
+      user_id: userId,
+      role: "user",
+      content: message,
+    });
+  } catch (e) {
+    console.warn("Chat: failed to save user message", e);
+  }
 
-  const chatHistory = (history || [])
-    .reverse()
-    .map((m: { role: string; content: string }) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    }));
+  // Загружаем историю (последние 20 сообщений). При ошибке — работаем без истории.
+  let chatHistory: { role: "user" | "assistant"; content: string }[] = [];
+  try {
+    const { data: history } = await supabase
+      .from("chat_messages")
+      .select("role, content")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(20);
 
-  // Stream response from OpenAI
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...chatHistory,
-    ],
-    stream: true,
-    max_tokens: 500,
-    temperature: 0.7,
-  });
+    chatHistory = (history || [])
+      .reverse()
+      .map((m: { role: string; content: string }) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      }));
+  } catch (e) {
+    console.warn("Chat: failed to load history", e);
+  }
 
-  // Create SSE readable stream
+  const model = process.env.OPENAI_CHAT_MODEL?.trim() || "gpt-4o-mini";
+
+  let stream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
+  try {
+    stream = await openai.chat.completions.create({
+      model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        ...chatHistory,
+      ],
+      stream: true,
+      max_tokens: 500,
+      temperature: 0.7,
+    });
+  } catch (err) {
+    console.error("OpenAI chat error:", err);
+    return new Response(
+      JSON.stringify({
+        error: "Не удалось получить ответ от AI. Проверьте OPENAI_API_KEY и модель.",
+      }),
+      { status: 502, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   const encoder = new TextEncoder();
   let fullResponse = "";
 
@@ -89,20 +131,22 @@ export async function POST(req: Request) {
           }
         }
 
-        // Send done signal
         controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
         controller.close();
 
-        // Save assistant message to DB after streaming completes
         if (fullResponse.trim()) {
-          await supabase.from("chat_messages").insert({
-            user_id: userId,
-            role: "assistant",
-            content: fullResponse.trim(),
-          });
+          try {
+            await supabase.from("chat_messages").insert({
+              user_id: userId,
+              role: "assistant",
+              content: fullResponse.trim(),
+            });
+          } catch (e) {
+            console.warn("Chat: failed to save assistant message", e);
+          }
         }
       } catch (error) {
-        console.error("Stream error:", error);
+        console.error("Chat stream error:", error);
         controller.enqueue(
           encoder.encode(
             `data: ${JSON.stringify({ error: "Ошибка генерации ответа" })}\n\n`
@@ -134,21 +178,28 @@ export async function GET() {
 
   const userId = (session.user as { id: string }).id;
 
-  const { data, error } = await supabase
-    .from("chat_messages")
-    .select("id, role, content, created_at")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: true })
-    .limit(100);
+  try {
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .select("id, role, content, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true })
+      .limit(100);
 
-  if (error) {
-    return new Response(JSON.stringify({ error: "Ошибка загрузки" }), {
-      status: 500,
+    if (error) {
+      console.warn("Chat GET history error:", error);
+      return new Response(JSON.stringify([]), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify(data || []), {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    console.warn("Chat GET error:", e);
+    return new Response(JSON.stringify([]), {
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  return new Response(JSON.stringify(data || []), {
-    headers: { "Content-Type": "application/json" },
-  });
 }

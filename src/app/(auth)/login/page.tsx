@@ -42,7 +42,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8">
       <Card className="max-w-md w-full">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-white mb-2">Вход в аккаунт</h1>

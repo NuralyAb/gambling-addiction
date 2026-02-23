@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import Providers from "@/components/Providers";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
   variable: "--font-inter",
+});
+
+const outfit = Outfit({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-outfit",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className="dark">
-      <body className={`${inter.variable} font-sans antialiased bg-dark text-slate-200 min-h-screen flex flex-col`}>
+      <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-dark text-slate-200 min-h-screen flex flex-col overflow-x-hidden`}>
         <Providers>{children}</Providers>
       </body>
     </html>

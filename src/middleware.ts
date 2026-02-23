@@ -1,10 +1,20 @@
 import { withAuth } from "next-auth/middleware";
+import { NextRequest, NextResponse } from "next/server";
 
-export default withAuth({
+const withAuthConfig = withAuth({
   pages: {
     signIn: "/login",
   },
 });
+
+export default async function middleware(request: NextRequest, event: { waitUntil: (p: Promise<unknown>) => void }) {
+  try {
+    return await withAuthConfig(request, event);
+  } catch (err) {
+    console.error("Middleware error:", err);
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+}
 
 export const config = {
   matcher: [

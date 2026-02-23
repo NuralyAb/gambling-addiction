@@ -8,11 +8,11 @@ import Button from "@/components/ui/Button";
 // ── Constants ──
 
 const MOODS = [
-  { value: "terrible", emoji: "\u{1F622}", label: "Ужасно" },
-  { value: "bad", emoji: "\u{1F614}", label: "Плохо" },
-  { value: "neutral", emoji: "\u{1F610}", label: "Нормально" },
-  { value: "good", emoji: "\u{1F642}", label: "Хорошо" },
-  { value: "great", emoji: "\u{1F60A}", label: "Отлично" },
+  { value: "terrible", label: "Ужасно" },
+  { value: "bad", label: "Плохо" },
+  { value: "neutral", label: "Нормально" },
+  { value: "good", label: "Хорошо" },
+  { value: "great", label: "Отлично" },
 ];
 
 const PLATFORMS = [
@@ -32,9 +32,21 @@ const TRIGGERS = [
   { value: "other", label: "Другое" },
 ];
 
-const MOOD_EMOJI: Record<string, string> = Object.fromEntries(
-  MOODS.map((m) => [m.value, m.emoji])
-);
+function MoodIcon({ value, className = "w-5 h-5" }: { value: string; className?: string }) {
+  const paths: Record<string, React.ReactNode> = {
+    terrible: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />,
+    bad: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />,
+    neutral: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zM9 15h6" />,
+    good: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />,
+    great: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />,
+  };
+  const color = value === "terrible" || value === "bad" ? "text-red-400" : value === "good" || value === "great" ? "text-green-400" : "text-slate-400";
+  return (
+    <span className={`inline-flex shrink-0 ${color}`} title={MOODS.find((m) => m.value === value)?.label}>
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">{paths[value] || paths.neutral}</svg>
+    </span>
+  );
+}
 
 const PLATFORM_LABEL: Record<string, string> = Object.fromEntries(
   PLATFORMS.map((p) => [p.value, p.label])
@@ -211,7 +223,11 @@ export default function DiaryPage() {
         </div>
       ) : entries.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="text-4xl mb-3">{"\u{1F4D3}"}</p>
+          <div className="flex justify-center mb-3">
+            <svg className="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
           <p className="text-slate-400 mb-1">Записей не найдено</p>
           <p className="text-sm text-slate-500">
             Создайте первую запись, чтобы начать отслеживание
@@ -343,24 +359,26 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
             <button
               type="button"
               onClick={() => setType("episode")}
-              className={`flex-1 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+              className={`flex-1 px-4 py-3 rounded-lg border text-sm font-medium transition-all inline-flex items-center justify-center gap-2 ${
                 type === "episode"
                   ? "border-red-500/40 bg-red-500/10 text-red-400"
                   : "border-dark-border text-slate-400 hover:border-slate-600"
               }`}
             >
-              {"\u{1F3B0}"} Игровой эпизод
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Игровой эпизод
             </button>
             <button
               type="button"
               onClick={() => setType("positive")}
-              className={`flex-1 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+              className={`flex-1 px-4 py-3 rounded-lg border text-sm font-medium transition-all inline-flex items-center justify-center gap-2 ${
                 type === "positive"
                   ? "border-accent/40 bg-accent/10 text-accent"
                   : "border-dark-border text-slate-400 hover:border-slate-600"
               }`}
             >
-              {"\u{2728}"} Позитивный день
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+              Позитивный день
             </button>
           </div>
         </div>
@@ -539,7 +557,7 @@ function MoodPicker({
               : "border-dark-border hover:border-slate-600"
           }`}
         >
-          <span className="text-2xl">{m.emoji}</span>
+          <span className="text-2xl"><MoodIcon value={m.value} className="w-8 h-8" /></span>
           <span className="text-xs text-slate-400">{m.label}</span>
         </button>
       ))}
@@ -557,11 +575,15 @@ function EntryCard({ entry }: { entry: DiaryEntry }) {
       <div className="flex items-start gap-4">
         {/* Type badge */}
         <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 ${
-            isEpisode ? "bg-red-500/10" : "bg-accent/10"
+          className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+            isEpisode ? "bg-red-500/10 text-red-400" : "bg-accent/10 text-accent"
           }`}
         >
-          {isEpisode ? "\u{1F3B0}" : "\u{2728}"}
+          {isEpisode ? (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+          )}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -602,12 +624,12 @@ function EntryCard({ entry }: { entry: DiaryEntry }) {
 
           {/* Mood before → after */}
           {entry.mood_before && (
-            <div className="flex items-center gap-1 text-lg mb-2">
-              <span title="До">{MOOD_EMOJI[entry.mood_before]}</span>
+            <div className="flex items-center gap-2 mb-2">
+              <MoodIcon value={entry.mood_before} className="w-6 h-6" />
               {isEpisode && entry.mood_after && (
                 <>
-                  <span className="text-slate-600 text-xs mx-1">&rarr;</span>
-                  <span title="После">{MOOD_EMOJI[entry.mood_after]}</span>
+                  <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  <MoodIcon value={entry.mood_after} className="w-6 h-6" />
                 </>
               )}
             </div>

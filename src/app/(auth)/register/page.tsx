@@ -63,7 +63,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8">
         <Card className="max-w-md w-full text-center">
           <div className="w-16 h-16 bg-accent-muted rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,7 +89,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8">
       <Card className="max-w-md w-full">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-white mb-2">Создать аккаунт</h1>

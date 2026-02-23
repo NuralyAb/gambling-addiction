@@ -79,7 +79,9 @@ export default function SupportPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Ошибка сервера");
+        const errBody = await res.json().catch(() => ({}));
+        const msg = typeof errBody?.error === "string" ? errBody.error : "Ошибка сервера";
+        throw new Error(msg);
       }
 
       const reader = res.body?.getReader();
@@ -132,7 +134,7 @@ export default function SupportPage() {
       const errorMsg: ChatMessage = {
         id: `err-${Date.now()}`,
         role: "assistant",
-        content: "Извините, произошла ошибка. Попробуйте ещё раз.",
+        content: error instanceof Error ? error.message : "Извините, произошла ошибка. Попробуйте ещё раз.",
         created_at: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -156,10 +158,10 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)]">
+    <div className="flex flex-col min-h-0 h-[calc(100vh-10rem)] sm:h-[calc(100vh-12rem)]">
       {/* Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-dark-border mb-4">
-        <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pb-4 border-b border-dark-border mb-4">
+        <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center shrink-0">
           <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
@@ -170,8 +172,8 @@ export default function SupportPage() {
             Безопасное пространство для разговора
           </p>
         </div>
-        <div className="ml-auto flex items-center gap-2 text-xs text-slate-500">
-          <a href="tel:88002000122" className="px-2 py-1 bg-red-500/10 text-red-400 rounded hover:bg-red-500/20 transition-colors">
+        <div className="ml-auto flex items-center gap-2 text-xs text-slate-500 shrink-0">
+          <a href="tel:88002000122" className="px-2 py-1.5 sm:py-1 bg-red-500/10 text-red-400 rounded hover:bg-red-500/20 transition-colors whitespace-nowrap">
             SOS: 8-800-2000-122
           </a>
         </div>
@@ -205,7 +207,7 @@ export default function SupportPage() {
         {streaming && (
           <div className="flex items-start gap-3">
             <AIAvatar />
-            <div className="max-w-[80%]">
+            <div className="max-w-[85%] sm:max-w-[80%]">
               <div className="bg-dark-card border border-dark-border rounded-2xl rounded-tl-sm px-4 py-3">
                 {streamingText ? (
                   <p className="text-slate-200 text-sm whitespace-pre-wrap leading-relaxed">
@@ -336,7 +338,7 @@ function MessageBubble({
     >
       {!isUser && <AIAvatar />}
 
-      <div className={`max-w-[80%] ${isUser ? "items-end" : ""}`}>
+      <div className={`max-w-[85%] sm:max-w-[80%] ${isUser ? "items-end" : ""}`}>
         <div
           className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
             isUser

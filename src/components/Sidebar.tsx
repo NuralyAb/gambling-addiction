@@ -129,14 +129,14 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <div className="lg:hidden flex overflow-x-auto gap-1 pb-4 -mx-4 px-4 scrollbar-hide">
+    <div className="lg:hidden flex overflow-x-auto gap-1.5 pb-3 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide snap-x snap-mandatory">
       {NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href;
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors shrink-0 snap-start min-h-[44px] ${
               isActive
                 ? "bg-accent/10 text-accent"
                 : "text-slate-400 hover:text-slate-200 bg-dark-lighter"
