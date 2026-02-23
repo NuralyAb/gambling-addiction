@@ -12,7 +12,7 @@ interface Quiz {
 
 interface Lesson {
   id: string;
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   readingTime: number;
   content: React.ReactNode;
@@ -123,7 +123,7 @@ function StagesTimeline() {
 const LESSONS: Lesson[] = [
   {
     id: "dopamine",
-    icon: "🧠",
+    icon: <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5" /></svg>,
     title: "Как работает дофаминовая ловушка",
     readingTime: 8,
     content: (
@@ -136,15 +136,15 @@ const LESSONS: Lesson[] = [
         <div className="bg-dark rounded-lg p-4">
           <p className="text-accent text-xs font-medium mb-2">ЦИКЛ ДОФАМИНОВОЙ ЛОВУШКИ</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-            <span className="bg-dark-lighter px-3 py-1.5 rounded-full">🎰 Триггер</span>
-            <span className="text-slate-500 hidden sm:block">→</span>
-            <span className="bg-dark-lighter px-3 py-1.5 rounded-full">⚡ Дофаминовый всплеск</span>
-            <span className="text-slate-500 hidden sm:block">→</span>
-            <span className="bg-dark-lighter px-3 py-1.5 rounded-full">🎲 Ставка</span>
-            <span className="text-slate-500 hidden sm:block">→</span>
-            <span className="bg-dark-lighter px-3 py-1.5 rounded-full">📉 Спад</span>
-            <span className="text-slate-500 hidden sm:block">→</span>
-            <span className="bg-dark-lighter px-3 py-1.5 rounded-full">🔄 Повтор</span>
+            <span className="bg-dark-lighter px-3 py-1.5 rounded-full border border-dark-border">Триггер</span>
+            <svg className="w-4 h-4 text-slate-500 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+            <span className="bg-dark-lighter px-3 py-1.5 rounded-full border border-dark-border">Всплеск</span>
+            <svg className="w-4 h-4 text-slate-500 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+            <span className="bg-dark-lighter px-3 py-1.5 rounded-full border border-dark-border">Ставка</span>
+            <svg className="w-4 h-4 text-slate-500 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+            <span className="bg-dark-lighter px-3 py-1.5 rounded-full border border-dark-border">Спад</span>
+            <svg className="w-4 h-4 text-slate-500 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+            <span className="bg-dark-lighter px-3 py-1.5 rounded-full border border-dark-border">Повтор</span>
           </div>
         </div>
         <p>
@@ -188,7 +188,7 @@ const LESSONS: Lesson[] = [
   },
   {
     id: "house-edge",
-    icon: "🏦",
+    icon: <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>,
     title: "Почему казино всегда выигрывает",
     readingTime: 7,
     content: (
@@ -256,7 +256,7 @@ const LESSONS: Lesson[] = [
   },
   {
     id: "cognitive-biases",
-    icon: "🪞",
+    icon: <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>,
     title: "Когнитивные искажения игрока",
     readingTime: 10,
     content: (
@@ -334,7 +334,7 @@ const LESSONS: Lesson[] = [
   },
   {
     id: "stages",
-    icon: "📉",
+    icon: <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898" /></svg>,
     title: "Стадии зависимости",
     readingTime: 6,
     content: (
@@ -345,7 +345,7 @@ const LESSONS: Lesson[] = [
         </p>
         <StagesTimeline />
         <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
-          <p className="text-accent text-sm font-medium">💡 Важно понимать</p>
+          <p className="text-accent text-sm font-medium">Важно понимать</p>
           <p className="text-slate-400 mt-1">
             Переход между стадиями происходит незаметно. Большинство игроков осознают проблему только
             на стадии отчаяния. Но чем раньше вы остановитесь, тем легче восстановление.
@@ -377,7 +377,7 @@ const LESSONS: Lesson[] = [
   },
   {
     id: "halt",
-    icon: "✋",
+    icon: <svg className="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l.075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 013.15 0V15M6.9 7.575a1.575 1.575 0 10-3.15 0v8.175a6.75 6.75 0 006.75 6.75h2.018a5.25 5.25 0 003.712-1.538l1.732-1.732a5.25 5.25 0 001.538-3.712l.003-2.024a.668.668 0 00-.668-.668 1.667 1.667 0 00-1.167.486l-1.45 1.45" /></svg>,
     title: "Техника HALT",
     readingTime: 5,
     content: (
@@ -391,39 +391,36 @@ const LESSONS: Lesson[] = [
             {
               letter: "H",
               word: "Hungry — Голод",
-              icon: "🍽️",
+              icon: "H",
               desc: "Низкий сахар в крови снижает самоконтроль. Регулярное питание — базовая защита.",
               tip: "Держите при себе здоровый перекус",
             },
             {
               letter: "A",
               word: "Angry — Злость",
-              icon: "😤",
+              icon: "A",
               desc: "Гнев и раздражение толкают к импульсивным действиям. Игра кажется способом «выпустить пар».",
               tip: "10 глубоких вдохов или быстрая прогулка",
             },
             {
               letter: "L",
               word: "Lonely — Одиночество",
-              icon: "😔",
+              icon: "L",
               desc: "Изоляция — один из главных триггеров. Онлайн-казино всегда «рядом», когда вам одиноко.",
               tip: "Позвоните другу или напишите в чат поддержки",
             },
             {
               letter: "T",
               word: "Tired — Усталость",
-              icon: "😴",
+              icon: "T",
               desc: "Уставший мозг хуже принимает решения. Вечерняя усталость — опасное время.",
               tip: "Ложитесь спать вовремя, не сидите в телефоне",
             },
           ].map((item) => (
             <div key={item.letter} className="bg-dark rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl">{item.icon}</span>
-                <div>
-                  <span className="text-accent text-lg font-bold">{item.letter}</span>
-                  <span className="text-white text-sm ml-1">{item.word}</span>
-                </div>
+                <span className="text-accent text-lg font-bold w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">{item.letter}</span>
+                <span className="text-white text-sm">{item.word}</span>
               </div>
               <p className="text-slate-400 text-sm">{item.desc}</p>
               <div className="mt-2 bg-accent/5 rounded px-3 py-1.5">
@@ -459,7 +456,7 @@ const LESSONS: Lesson[] = [
   },
   {
     id: "mindfulness",
-    icon: "🧘",
+    icon: <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" /></svg>,
     title: "Mindfulness и осознанность",
     readingTime: 7,
     content: (
@@ -496,7 +493,7 @@ const LESSONS: Lesson[] = [
           </div>
           <div className="flex justify-between text-xs text-slate-500 mt-1">
             <span>0 мин</span>
-            <span>↑ Пик</span>
+            <span>Пик</span>
             <span>20 мин</span>
           </div>
           <p className="text-slate-400 mt-2">
@@ -506,9 +503,7 @@ const LESSONS: Lesson[] = [
         <div className="bg-dark rounded-lg p-4">
           <p className="text-accent text-xs font-medium mb-2">ДЫХАТЕЛЬНОЕ УПРАЖНЕНИЕ «4-7-8»</p>
           <p className="text-slate-400">
-            Вдох на <span className="text-white">4</span> секунды →
-            Задержка на <span className="text-white">7</span> секунд →
-            Выдох на <span className="text-white">8</span> секунд.
+            Вдох на <span className="text-white">4</span> сек — Задержка на <span className="text-white">7</span> сек — Выдох на <span className="text-white">8</span> сек.
             Повторите 4 раза.
           </p>
         </div>
@@ -534,7 +529,7 @@ const LESSONS: Lesson[] = [
   },
   {
     id: "finances",
-    icon: "💰",
+    icon: <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>,
     title: "Финансовое восстановление",
     readingTime: 8,
     content: (
@@ -588,7 +583,7 @@ const LESSONS: Lesson[] = [
           ))}
         </div>
         <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
-          <p className="text-accent text-sm font-medium">💡 Помните</p>
+          <p className="text-accent text-sm font-medium">Помните</p>
           <p className="text-slate-400 mt-1">
             Деньги, потерянные в игре, уже не вернуть. Но каждый день без игры — это день, когда
             вы не теряете новые деньги. Фокусируйтесь на будущем, а не на прошлом.
@@ -621,7 +616,7 @@ const LESSONS: Lesson[] = [
   },
   {
     id: "new-life",
-    icon: "🌱",
+    icon: <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>,
     title: "Построение новой жизни",
     readingTime: 7,
     content: (
@@ -643,7 +638,7 @@ const LESSONS: Lesson[] = [
             ].map((r, i) => (
               <div key={i} className="bg-dark-lighter/50 rounded-lg p-3">
                 <p className="text-xs text-red-400 line-through">{r.old}</p>
-                <p className="text-xs text-accent mt-1">→ {r.newH}</p>
+                <p className="text-xs text-accent mt-1">{r.newH}</p>
               </div>
             ))}
           </div>
@@ -729,7 +724,10 @@ function LessonQuiz({
 
   return (
     <div className="mt-6 border-t border-dark-border pt-6">
-      <p className="text-sm font-medium text-white mb-4">📝 Проверьте себя</p>
+      <p className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+        <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+        Проверьте себя
+      </p>
       <div className="space-y-5">
         {quiz.map((q, qi) => (
           <div key={qi}>
@@ -776,8 +774,8 @@ function LessonQuiz({
             Проверить ответы
           </Button>
         ) : allCorrect ? (
-          <div className="flex items-center gap-2 text-green-400 text-sm">
-            <span>✅</span>
+          <div className="flex items-center gap-2 text-emerald-400 text-sm">
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" /></svg>
             <span>Отлично! Все ответы верны. Урок пройден!</span>
           </div>
         ) : (
@@ -839,7 +837,10 @@ export default function EducationPage() {
           />
         </div>
         {completedCount === LESSONS.length && (
-          <p className="text-accent text-sm mt-2">🎉 Поздравляем! Все уроки пройдены!</p>
+          <p className="text-accent text-sm mt-2 flex items-center gap-2">
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
+            Поздравляем! Все уроки пройдены!
+          </p>
         )}
       </Card>
 
@@ -859,13 +860,16 @@ export default function EducationPage() {
                 onClick={() => toggleLesson(lesson.id)}
                 className="w-full flex items-center gap-4 p-4 sm:p-5 text-left hover:bg-dark-lighter/30 transition-colors"
               >
-                <div className="text-2xl shrink-0">{lesson.icon}</div>
+                <div className="w-10 h-10 rounded-xl bg-dark-lighter/50 border border-dark-border flex items-center justify-center shrink-0 [&>svg]:w-6 [&>svg]:h-6">
+                  {lesson.icon}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-slate-500">Урок {index + 1}</span>
                     {isCompleted && (
-                      <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">
-                        ✓ Пройден
+                      <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" /></svg>
+                        Пройден
                       </span>
                     )}
                   </div>
