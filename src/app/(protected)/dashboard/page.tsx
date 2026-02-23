@@ -110,9 +110,51 @@ interface PredictData {
   recommendations: string[];
 }
 
+interface AIAnalysis {
+  modules: {
+    neuralNetwork: {
+      meta: { name: string; architecture: string; parameters: number };
+      prediction: {
+        riskScore: number;
+        riskLevel: "LOW" | "MEDIUM" | "HIGH";
+        confidence: number;
+        featureImportance: Array<{ feature: string; normalizedValue: number; impact: string }>;
+      };
+    };
+    sentimentAnalysis: {
+      meta: { name: string; lexicon: string };
+      trend: {
+        averageScore: number;
+        trend: string;
+        dominantMood: string;
+        negativeStreak: number;
+        warningSignals: string[];
+        entryCount: number;
+      };
+    };
+    anomalyDetector: {
+      meta: { name: string; method: string };
+      summary: {
+        totalAnomalies: number;
+        criticalCount: number;
+        warningCount: number;
+        overallRisk: string;
+        alerts: string[];
+      };
+    };
+  };
+  combinedRisk: {
+    neuralScore: number;
+    sentimentTrend: string;
+    anomalyRisk: string;
+    allWarnings: string[];
+  };
+}
+
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [predict, setPredict] = useState<PredictData | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
   const quote = getDailyQuote();
 
@@ -120,10 +162,12 @@ export default function DashboardPage() {
     Promise.all([
       fetch("/api/dashboard").then((r) => r.json()),
       fetch("/api/ai/predict-risk").then((r) => r.json()).catch(() => null),
+      fetch("/api/ai/analyze").then((r) => r.ok ? r.json() : null).catch(() => null),
     ])
-      .then(([dashData, predictData]) => {
+      .then(([dashData, predictData, analysisData]) => {
         setData(dashData);
         setPredict(predictData);
+        setAiAnalysis(analysisData);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -318,7 +362,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4">
-            {/* Risk Prediction */}
+            {/* Neural Network Risk */}
             <div className="bg-dark-lighter rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
@@ -326,10 +370,42 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-xs font-medium text-slate-300">Нейросеть</p>
-                  <p className="text-[10px] text-slate-500">brain.js</p>
+                  <p className="text-[10px] text-slate-500">6→8→4→1</p>
                 </div>
               </div>
-              {predict ? (
+              {aiAnalysis ? (() => {
+                const nn = aiAnalysis.modules.neuralNetwork.prediction;
+                return (
+                  <>
+                    <div className="flex items-end gap-1 mb-2">
+                      <span className={`text-2xl font-bold ${
+                        nn.riskLevel === "HIGH" ? "text-red-400" :
+                        nn.riskLevel === "MEDIUM" ? "text-yellow-400" : "text-green-400"
+                      }`}>{nn.riskScore}</span>
+                      <span className="text-slate-500 text-xs mb-1">/100</span>
+                    </div>
+                    <div className="h-1.5 bg-dark rounded-full overflow-hidden mb-2">
+                      <motion.div
+                        className={`h-full rounded-full ${
+                          nn.riskLevel === "HIGH" ? "bg-red-400" :
+                          nn.riskLevel === "MEDIUM" ? "bg-yellow-400" : "bg-green-400"
+                        }`}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${nn.riskScore}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                        nn.riskLevel === "HIGH" ? "text-red-400 bg-red-500/10" :
+                        nn.riskLevel === "MEDIUM" ? "text-yellow-400 bg-yellow-500/10" :
+                        "text-green-400 bg-green-500/10"
+                      }`}>{nn.riskLevel}</span>
+                      <span className="text-[10px] text-slate-500">conf: {nn.confidence}</span>
+                    </div>
+                  </>
+                );
+              })() : predict ? (
                 <>
                   <div className="flex items-end gap-1 mb-2">
                     <span className={`text-2xl font-bold ${
@@ -338,31 +414,20 @@ export default function DashboardPage() {
                     }`}>{predict.relapseRisk}</span>
                     <span className="text-slate-500 text-xs mb-1">/100</span>
                   </div>
-                  <div className="h-1.5 bg-dark rounded-full overflow-hidden mb-2">
-                    <motion.div
-                      className={`h-full rounded-full ${
-                        predict.riskLevel === "HIGH" ? "bg-red-400" :
-                        predict.riskLevel === "MEDIUM" ? "bg-yellow-400" : "bg-green-400"
-                      }`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${predict.relapseRisk}%` }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                    />
-                  </div>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                    predict.riskLevel === "HIGH" ? "text-red-400 bg-red-500/10" :
-                    predict.riskLevel === "MEDIUM" ? "text-yellow-400 bg-yellow-500/10" :
-                    "text-green-400 bg-green-500/10"
+                    predict.trend === "increasing" ? "text-red-400 bg-red-500/10" :
+                    predict.trend === "decreasing" ? "text-green-400 bg-green-500/10" :
+                    "text-slate-400 bg-slate-500/10"
                   }`}>
                     {predict.trend === "increasing" ? "↑ Растёт" : predict.trend === "decreasing" ? "↓ Снижается" : "→ Стабильно"}
                   </span>
                 </>
               ) : (
-                <div className="text-slate-500 text-xs">Нет данных</div>
+                <div className="text-slate-500 text-xs">Загрузка...</div>
               )}
             </div>
 
-            {/* Sentiment */}
+            {/* NLP Sentiment */}
             <div className="bg-dark-lighter rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -370,19 +435,40 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-xs font-medium text-slate-300">NLP-анализ</p>
-                  <p className="text-[10px] text-slate-500">sentiment</p>
+                  <p className="text-[10px] text-slate-500">AFINN-165</p>
                 </div>
               </div>
-              {predict && predict.warnings.length > 0 ? (
-                <div className="space-y-1.5">
-                  {predict.warnings.slice(0, 2).map((w, i) => (
-                    <div key={i} className="text-[11px] text-slate-400 flex items-start gap-1">
-                      <span className="text-yellow-400 mt-0.5 shrink-0">⚠</span>
-                      <span className="line-clamp-2">{w}</span>
+              {aiAnalysis ? (() => {
+                const s = aiAnalysis.modules.sentimentAnalysis.trend;
+                const moodIcon = s.dominantMood === "positive" ? "😊" : s.dominantMood === "negative" ? "😟" : "😐";
+                const trendLabel = s.trend === "improving" ? "↑ Улучшается" : s.trend === "declining" ? "↓ Ухудшается" : "→ Стабильно";
+                const trendColor = s.trend === "improving" ? "text-green-400" : s.trend === "declining" ? "text-red-400" : "text-slate-400";
+                return (
+                  <>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">{moodIcon}</span>
+                      <div>
+                        <p className={`text-sm font-medium ${trendColor}`}>{trendLabel}</p>
+                        <p className="text-[10px] text-slate-500">{s.entryCount} записей проанализировано</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
+                    {s.warningSignals.length > 0 ? (
+                      <div className="space-y-1">
+                        {s.warningSignals.slice(0, 2).map((w, i) => (
+                          <div key={i} className="text-[10px] text-yellow-400 flex items-start gap-1">
+                            <span className="mt-0.5 shrink-0">⚠</span>
+                            <span className="line-clamp-1">{w}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-[10px] text-green-400/80 flex items-center gap-1">
+                        <span>✓</span> Фон стабильный
+                      </div>
+                    )}
+                  </>
+                );
+              })() : (
                 <div className="text-xs text-green-400/80 flex items-center gap-1.5">
                   <span>✓</span> Эмоциональный фон стабильный
                 </div>
@@ -400,16 +486,41 @@ export default function DashboardPage() {
                   <p className="text-[10px] text-slate-500">Z-score</p>
                 </div>
               </div>
-              {predict?.recommendations && predict.recommendations.length > 0 ? (
-                <div className="text-[11px] text-slate-400 space-y-1.5">
-                  {predict.recommendations.slice(0, 2).map((r, i) => (
-                    <div key={i} className="flex items-start gap-1">
-                      <span className="text-accent mt-0.5 shrink-0">→</span>
-                      <span className="line-clamp-2">{r}</span>
+              {aiAnalysis ? (() => {
+                const a = aiAnalysis.modules.anomalyDetector.summary;
+                const riskColor = a.overallRisk === "high" ? "text-red-400" : a.overallRisk === "moderate" ? "text-yellow-400" : "text-green-400";
+                return (
+                  <>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div>
+                        <p className={`text-lg font-bold ${riskColor}`}>
+                          {a.totalAnomalies}
+                        </p>
+                        <p className="text-[10px] text-slate-500">аномалий</p>
+                      </div>
+                      {a.criticalCount > 0 && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded text-red-400 bg-red-500/10">
+                          {a.criticalCount} крит.
+                        </span>
+                      )}
                     </div>
-                  ))}
-                </div>
-              ) : (
+                    {a.alerts.length > 0 ? (
+                      <div className="space-y-1">
+                        {a.alerts.slice(0, 2).map((al, i) => (
+                          <div key={i} className="text-[10px] text-slate-400 flex items-start gap-1">
+                            <span className="text-amber-400 mt-0.5 shrink-0">!</span>
+                            <span className="line-clamp-1">{al}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-[10px] text-green-400/80 flex items-center gap-1">
+                        <span>✓</span> Аномалий не обнаружено
+                      </div>
+                    )}
+                  </>
+                );
+              })() : (
                 <div className="text-xs text-green-400/80 flex items-center gap-1.5">
                   <span>✓</span> Аномалий не обнаружено
                 </div>
