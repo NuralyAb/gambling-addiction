@@ -194,15 +194,29 @@ export async function GET() {
           recentVsPrevious: sentimentTrend.recentVsPrevious,
           entryCount: sentimentTrend.entries.length,
         },
+        entries: sentimentTrend.entries,
       },
       anomalyDetector: {
         meta: ANOMALY_META,
         summary: anomalyReport.summary,
-        spending: anomalyReport.spending.stats,
-        episodes: anomalyReport.episodes.stats,
+        spending: {
+          ...anomalyReport.spending.stats,
+          anomalies: anomalyReport.spending.anomalies.filter((a) => a.isAnomaly),
+          chart: anomalyReport.spending.anomalies.map((a) => ({
+            date: a.date, value: a.value, z: a.zScore, severity: a.severity,
+          })),
+        },
+        episodes: {
+          ...anomalyReport.episodes.stats,
+          anomalies: anomalyReport.episodes.anomalies.filter((a) => a.isAnomaly),
+        },
         timePatterns: {
           peakHour: anomalyReport.timePatterns.peakHour,
           nightRatio: anomalyReport.timePatterns.nightRatio,
+        },
+        blockAttempts: {
+          ...anomalyReport.blockAttempts.stats,
+          anomalies: anomalyReport.blockAttempts.anomalies.filter((a) => a.isAnomaly),
         },
       },
     },

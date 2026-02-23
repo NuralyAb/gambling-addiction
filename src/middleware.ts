@@ -13,6 +13,8 @@ export const config = {
     "/pgsi-test/:path*",
     "/diary/:path*",
     "/analytics/:path*",
+    "/ai-insights/:path*",
+    "/achievements/:path*",
     "/support/:path*",
     "/resources/:path*",
   ],

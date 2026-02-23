@@ -440,6 +440,16 @@ export default function DashboardPage() {
               </div>
               {aiAnalysis ? (() => {
                 const s = aiAnalysis.modules.sentimentAnalysis.trend;
+                if (s.entryCount === 0) {
+                  return (
+                    <div className="text-center py-1">
+                      <p className="text-[11px] text-slate-500 mb-1.5">Нет текстовых записей</p>
+                      <Link href="/diary" className="text-[10px] text-accent hover:underline">
+                        Добавить запись в дневник
+                      </Link>
+                    </div>
+                  );
+                }
                 const moodIcon = s.dominantMood === "positive" ? "😊" : s.dominantMood === "negative" ? "😟" : "😐";
                 const trendLabel = s.trend === "improving" ? "↑ Улучшается" : s.trend === "declining" ? "↓ Ухудшается" : "→ Стабильно";
                 const trendColor = s.trend === "improving" ? "text-green-400" : s.trend === "declining" ? "text-red-400" : "text-slate-400";
@@ -469,8 +479,8 @@ export default function DashboardPage() {
                   </>
                 );
               })() : (
-                <div className="text-xs text-green-400/80 flex items-center gap-1.5">
-                  <span>✓</span> Эмоциональный фон стабильный
+                <div className="text-center py-1">
+                  <p className="text-[11px] text-slate-500">Загрузка...</p>
                 </div>
               )}
             </div>
