@@ -177,8 +177,8 @@ export default function LandingPage() {
                   <div className="text-sm text-slate-500 mt-1">Конфиденциально</div>
                 </div>
                 <div className="rounded-xl py-4 px-2 bg-white/[0.02] border border-white/5">
-                  <div className="font-display text-2xl sm:text-3xl font-bold text-accent">0 &#8381;</div>
-                  <div className="text-sm text-slate-500 mt-1">Бесплатно</div>
+                  <div className="font-display text-2xl sm:text-3xl font-bold text-accent">Telegram</div>
+                  <div className="text-sm text-slate-500 mt-1">Бот в ТГ</div>
                 </div>
               </div>
             </div>
