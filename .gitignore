@@ -35,5 +35,26 @@ desktop.ini
 *.tsbuildinfo
 next-env.d.ts
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+ml_venv/
+venv/
+.venv/
+env/
+*.egg-info/
+.eggs/
+
+# Claude / IDE local
+.claude/
+
+# Orchids (local)
+.orchids/
+
 # misc
 *.pem
+*.log
+.cache/

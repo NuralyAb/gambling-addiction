@@ -44,9 +44,9 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 
 const aiModules = [
   {
-    title: "Локальная нейросеть",
-    tech: "SafeBet Neural Network",
-    description: "Собственная feedforward-сеть (6→8→4→1) для предсказания рисков рецидива на основе поведенческих паттернов",
+    title: "Локальная ML модель",
+    tech: "SafeBet GBM Relapse Predictor",
+    description: "Gradient Boosted Trees (120+100 деревьев) для предсказания дней до срыва на основе поведенческих паттернов. MAE=3.17 дн., R²=0.865",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
@@ -111,7 +111,7 @@ const neuralFeatures = [
 ];
 
 const techStack = [
-  { tech: "SafeBet Neural Network", purpose: "Нейросеть для предсказания рисков (6→8→4→1)", independent: true },
+  { tech: "SafeBet GBM Relapse Predictor", purpose: "ML модель для предсказания дней до срыва (GBM 120+100 деревьев)", independent: true },
   { tech: "sentiment (AFINN-165)", purpose: "NLP-анализ текста дневника", independent: true },
   { tech: "Z-score алгоритм", purpose: "Детектор аномалий", independent: true },
   { tech: "OpenAI GPT-4o", purpose: "AI-чат поддержка", independent: false },
@@ -196,7 +196,7 @@ export default function AboutAIPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          * Для нейросети, NLP и детектора аномалий — 0 внешних API-вызовов
+          * Для ML модели, NLP и детектора аномалий — 0 внешних API-вызовов
         </motion.p>
       </section>
 
@@ -386,7 +386,7 @@ export default function AboutAIPage() {
             Независимая AI-модель
           </motion.h2>
           <motion.p variants={fadeUp} custom={2} className="text-slate-400 text-center max-w-2xl mx-auto mb-12">
-            Нейронная сеть, обученная на поведенческих признаках — работает{" "}
+            ML модель (Gradient Boosted Trees), обученная на поведенческих признаках — работает{" "}
             <span className="text-accent font-semibold">полностью на сервере</span>,
             без каких-либо внешних API-вызовов
           </motion.p>
@@ -405,7 +405,7 @@ export default function AboutAIPage() {
                 <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                 </svg>
-                Архитектура нейросети
+                Архитектура ML модели
               </h3>
 
               {/* Feature inputs */}
@@ -444,9 +444,9 @@ export default function AboutAIPage() {
                     <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
                     </svg>
-                    <span className="text-emerald-400 font-bold">brain.js Neural Network</span>
+                    <span className="text-emerald-400 font-bold">GBM Relapse Predictor</span>
                   </div>
-                  <p className="text-emerald-400/70 text-xs">Многослойный перцептрон · Обучение на серверной стороне</p>
+                  <p className="text-emerald-400/70 text-xs">Gradient Boosted Trees · scikit-learn · Инференс на сервере</p>
                 </div>
 
                 {/* Arrow */}
@@ -488,7 +488,7 @@ export default function AboutAIPage() {
               </h3>
               <ul className="space-y-3">
                 {[
-                  { text: "Полная независимость — нейросеть работает в Node.js на сервере", accent: true },
+                  { text: "Полная независимость — ML модель работает в Node.js на сервере", accent: true },
                   { text: "Нулевые внешние API-вызовы для предсказания рисков", accent: true },
                   { text: "Обучение на поведенческих данных конкретного пользователя", accent: false },
                   { text: "Быстрый инференс — результат за миллисекунды", accent: false },
@@ -1069,7 +1069,7 @@ export default function AboutAIPage() {
               <div>
                 <h3 className="text-white font-semibold mb-1">Итого</h3>
                 <p className="text-slate-400 text-sm leading-relaxed">
-                  SafeBet AI использует <span className="text-accent font-medium">3 полностью независимых AI-модуля</span> (нейросеть,
+                  SafeBet AI использует <span className="text-accent font-medium">3 полностью независимых AI-модуля</span> (ML модель,
                   sentiment, Z-score), работающих локально без внешних API, и <span className="text-purple-400 font-medium">1 внешний
                   модуль</span> (GPT-4o) для чат-поддержки с полной анонимизацией данных.
                   Это обеспечивает баланс между мощностью AI и конфиденциальностью пользователей.

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
+import { predictRisk } from "@/lib/ai/neural-risk";
+import type { BehavioralFeatures } from "@/lib/ai/neural-risk";
 
 const MOOD_SCORE: Record<string, number> = {
   terrible: 1,
@@ -267,81 +269,30 @@ export async function GET() {
     (r) => new Date(r.created_at) >= sevenDaysAgo
   ).length;
 
-  // ========== RISK SCORE CALCULATION ==========
-  let riskScore = 10; // baseline
+  // ========== GBM RISK SCORE (replaces hand-crafted rules) ==========
 
-  // Factor 1: Episode frequency trend (+0 to +20)
-  if (trend === "increasing") {
-    const ratio = episodesPrev7 > 0 ? episodesLast7 / episodesPrev7 : episodesLast7 > 0 ? 3 : 0;
-    riskScore += Math.min(20, Math.round(ratio * 7));
-  } else if (trend === "decreasing") {
-    riskScore -= 5;
-  }
+  const spendingTrend = avgAmountPrev7 > 0
+    ? avgAmountLast7 / avgAmountPrev7
+    : avgAmountLast7 > 0 ? 2 : 0;
 
-  // Factor 2: Raw episode count last 7 days (+0 to +15)
-  riskScore += Math.min(15, episodesLast7 * 3);
+  const gbmFeatures: BehavioralFeatures = {
+    episodeFrequency:   episodesLast7,
+    spendingTrend,
+    moodScore:          avgMoodBefore > 0 ? avgMoodBefore : 3,
+    nightActivityRatio: episodes.length > 0 ? nightEpisodes.length / episodes.length : 0,
+    triggerDiversity:   Object.keys(triggerCounts).length,
+    streakDays,
+    // Extended features
+    episodesPrev7,
+    unlockAttempts7:    unlockLast7,
+    blockedSites7:      blockedSitesWeek,
+    totalEpisodes30:    episodes.length,
+  };
 
-  // Factor 3: Night activity (+0 to +15)
-  if (nightActivityPercent > 50) {
-    riskScore += 15;
-  } else if (nightActivityPercent > 30) {
-    riskScore += 10;
-  } else if (nightActivityPercent > 10) {
-    riskScore += 5;
-  }
-
-  // Factor 4: Low mood correlation (+0 to +10)
-  if (avgMoodBefore > 0 && avgMoodBefore <= 2) {
-    riskScore += 10;
-  } else if (avgMoodBefore > 0 && avgMoodBefore <= 2.5) {
-    riskScore += 5;
-  }
-
-  // Factor 5: Financial escalation (+0 to +15)
-  if (financialTrend === "increasing") {
-    riskScore += 15;
-  }
-
-  // Factor 6: Blocked sites pressure (+0 to +10)
-  if (blockedSitesWeek > 20) {
-    riskScore += 10;
-  } else if (blockedSitesWeek > 10) {
-    riskScore += 7;
-  } else if (blockedSitesWeek > 5) {
-    riskScore += 4;
-  }
-
-  // Factor 7: Blocked sites trend (+0 to +5)
-  if (blockedSitesWeek > blockedSitesPrevWeek + 3) {
-    riskScore += 5;
-  }
-
-  // Factor 8: Unlock requests (+0 to +10)
-  if (unlockLast7 >= 3) {
-    riskScore += 10;
-  } else if (unlockLast7 >= 1) {
-    riskScore += 5;
-  }
-
-  // Factor 9: Streak bonus (reduction)
-  if (streakDays >= 30) {
-    riskScore -= 15;
-  } else if (streakDays >= 14) {
-    riskScore -= 10;
-  } else if (streakDays >= 7) {
-    riskScore -= 5;
-  }
-
-  const relapseRisk = Math.max(0, Math.min(100, riskScore));
-
-  let riskLevel: "LOW" | "MEDIUM" | "HIGH";
-  if (relapseRisk >= 60) {
-    riskLevel = "HIGH";
-  } else if (relapseRisk >= 30) {
-    riskLevel = "MEDIUM";
-  } else {
-    riskLevel = "LOW";
-  }
+  const gbmResult = predictRisk(gbmFeatures);
+  const relapseRisk = gbmResult.riskScore;
+  const riskLevel   = gbmResult.riskLevel;
+  const daysUntilRelapse = gbmResult.daysUntilRelapse;
 
   // ========== WARNINGS ==========
   const warnings: string[] = [];
@@ -445,6 +396,7 @@ export async function GET() {
   return NextResponse.json({
     relapseRisk,
     riskLevel,
+    daysUntilRelapse,
     trend,
     warnings,
     recommendations,

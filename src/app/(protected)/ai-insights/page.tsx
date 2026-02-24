@@ -36,12 +36,22 @@ interface AIData {
   timestamp: string;
   modules: {
     neuralNetwork: {
-      meta: { name: string; architecture: string; parameters: number };
+      meta: {
+        name: string;
+        architecture: string;
+        parameters: number;
+        algorithm?: string;
+        datasetSize?: number;
+        regMAE?: number;
+        regR2?: number;
+      };
       prediction: {
         riskScore: number;
         riskProbability: number;
         riskLevel: "LOW" | "MEDIUM" | "HIGH";
         confidence: number;
+        daysUntilRelapse?: number;
+        relapseProbability?: number;
         featureImportance: FeatureImportance[];
       };
       inputFeatures: {
@@ -198,7 +208,7 @@ export default function AIInsightsPage() {
   };
 
   const modules = [
-    { id: 0, label: "Нейросеть", sub: nn.meta.architecture, color: "emerald" },
+    { id: 0, label: "GBM-модель", sub: nn.meta.algorithm || nn.meta.architecture, color: "emerald" },
     { id: 1, label: "NLP-анализ", sub: "AFINN-165", color: "blue" },
     { id: 2, label: "Детектор аномалий", sub: "Z-Score", color: "amber" },
   ];
@@ -368,13 +378,43 @@ export default function AIInsightsPage() {
             <Card>
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Нейронная сеть</h2>
-                  <p className="text-xs text-slate-500">{nn.meta.architecture} / {nn.meta.parameters} параметров</p>
+                  <h2 className="text-lg font-semibold text-white">GBM Relapse Predictor</h2>
+                  <p className="text-xs text-slate-500">
+                    {nn.meta.algorithm || nn.meta.architecture}
+                    {nn.meta.regMAE ? ` · MAE ${nn.meta.regMAE}d · R² ${nn.meta.regR2}` : ` · ${nn.meta.parameters} параметров`}
+                  </p>
                 </div>
                 <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  Независимая
+                  Обучена на данных
                 </span>
               </div>
+
+              {/* Days until relapse banner */}
+              {nn.prediction.daysUntilRelapse !== undefined && (
+                <div className={`mb-6 p-4 rounded-xl border flex items-center gap-4 ${
+                  nn.prediction.daysUntilRelapse <= 10
+                    ? "bg-red-500/5 border-red-500/20"
+                    : nn.prediction.daysUntilRelapse <= 25
+                      ? "bg-amber-500/5 border-amber-500/20"
+                      : "bg-emerald-500/5 border-emerald-500/20"
+                }`}>
+                  <div className={`text-4xl font-bold tabular-nums ${
+                    nn.prediction.daysUntilRelapse <= 10 ? "text-red-400" :
+                    nn.prediction.daysUntilRelapse <= 25 ? "text-amber-400" : "text-emerald-400"
+                  }`}>
+                    {nn.prediction.daysUntilRelapse}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">дней до предполагаемого срыва</p>
+                    <p className="text-xs text-slate-500">
+                      Предсказание GBM · Обучена на 2000 записях ·{" "}
+                      {nn.prediction.relapseProbability !== undefined
+                        ? `P(срыв скоро) = ${Math.round(nn.prediction.relapseProbability * 100)}%`
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left: gauge + inputs */}

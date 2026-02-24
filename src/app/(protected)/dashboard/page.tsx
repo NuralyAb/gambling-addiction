@@ -392,8 +392,8 @@ export default function DashboardPage() {
                   <div className="w-2 h-2 rounded-full bg-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-slate-300">Нейросеть</p>
-                  <p className="text-[10px] text-slate-500">6-8-4-1</p>
+                  <p className="text-xs font-medium text-slate-300">ML модель</p>
+                  <p className="text-[10px] text-slate-500">GBM</p>
                 </div>
               </div>
               {aiAnalysis ? (() => {
@@ -563,7 +563,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3 text-[10px] text-slate-500">
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                Нейросеть
+                ML модель
               </span>
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />

@@ -100,6 +100,15 @@ export async function GET() {
     streakDays = Math.floor((now.getTime() - regDate.getTime()) / 86400000);
   }
 
+  const unlockRequests7 = blockEvents.filter(
+    (e) => new Date(e.created_at) >= sevenDaysAgo
+  ).length;
+  const blockedDomains7 = new Set(
+    blockEvents
+      .filter((e) => new Date(e.created_at) >= sevenDaysAgo)
+      .map((e) => e.domain)
+  ).size;
+
   const features: BehavioralFeatures = {
     episodeFrequency: episodesLast7.length,
     spendingTrend: avgPrev > 0 ? avgLast / avgPrev : avgLast > 0 ? 2 : 0,
@@ -107,6 +116,11 @@ export async function GET() {
     nightActivityRatio: episodes.length > 0 ? nightEpisodes.length / episodes.length : 0,
     triggerDiversity: triggers.size,
     streakDays,
+    // Extended features for GBM model
+    episodesPrev7: episodesPrev7.length,
+    unlockAttempts7: unlockRequests7,
+    blockedSites7: blockedDomains7,
+    totalEpisodes30: episodes.length,
   };
 
   const neuralPrediction = predictRisk(features);
@@ -179,9 +193,35 @@ export async function GET() {
     timestamp: now.toISOString(),
     modules: {
       neuralNetwork: {
-        meta: NEURAL_META,
-        prediction: neuralPrediction,
-        inputFeatures: features,
+        meta: {
+          name: NEURAL_META.name,
+          architecture: NEURAL_META.architecture,
+          parameters: NEURAL_META.parameters,
+          algorithm: NEURAL_META.algorithm,
+          datasetSize: NEURAL_META.datasetSize,
+          regMAE: NEURAL_META.regMAE,
+          regR2: NEURAL_META.regR2,
+          clsAUC: NEURAL_META.clsAUC,
+          independent: NEURAL_META.independent,
+          externalAPIs: NEURAL_META.externalAPIs,
+        },
+        prediction: {
+          riskScore: neuralPrediction.riskScore,
+          riskProbability: neuralPrediction.riskProbability,
+          riskLevel: neuralPrediction.riskLevel,
+          confidence: neuralPrediction.confidence,
+          daysUntilRelapse: neuralPrediction.daysUntilRelapse,
+          relapseProbability: neuralPrediction.relapseProbability,
+          featureImportance: neuralPrediction.featureImportance,
+        },
+        inputFeatures: {
+          episodeFrequency: features.episodeFrequency,
+          spendingTrend: features.spendingTrend,
+          moodScore: features.moodScore,
+          nightActivityRatio: features.nightActivityRatio,
+          triggerDiversity: features.triggerDiversity,
+          streakDays: features.streakDays,
+        },
       },
       sentimentAnalysis: {
         meta: SENTIMENT_META,
@@ -227,7 +267,7 @@ export async function GET() {
       allWarnings: [
         ...neuralPrediction.featureImportance
           .filter((f) => f.impact === "high")
-          .map((f) => `Нейросеть: высокий вклад — ${f.feature}`),
+          .map((f) => `ML модель: высокий вклад — ${f.feature}`),
         ...sentimentTrend.warningSignals.map((w) => `NLP: ${w}`),
         ...anomalyReport.summary.alerts.map((a) => `Детектор: ${a}`),
       ],
