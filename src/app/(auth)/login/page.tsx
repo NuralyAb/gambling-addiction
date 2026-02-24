@@ -32,7 +32,8 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      const check = await fetch("/api/admin/check").then((r) => r.json());
+      router.push(check.admin ? "/admin" : "/dashboard");
       router.refresh();
     } catch {
       setError("Ошибка соединения с сервером");

@@ -21,12 +21,12 @@ export async function GET(req: Request) {
 
     if (error) {
       return new Response(
-        JSON.stringify({ logs: [], note: "Таблица admin_logs может отсутствовать. Выполните supabase-migration-admin.sql" }),
+        JSON.stringify({ logs: [], tableMissing: true }),
         { headers: { "Content-Type": "application/json" } }
       );
     }
 
-    return new Response(JSON.stringify({ logs: data ?? [] }), {
+    return new Response(JSON.stringify({ logs: data ?? [], tableMissing: false }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (e) {

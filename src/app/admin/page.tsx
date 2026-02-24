@@ -29,6 +29,7 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [activity, setActivity] = useState<Activity | null>(null);
   const [logs, setLogs] = useState<AdminLog[]>([]);
+  const [logsTableMissing, setLogsTableMissing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,6 +66,14 @@ export default function AdminPage() {
         setStats(s);
         setActivity(a);
         setLogs(l.logs ?? []);
+        setLogsTableMissing(l.tableMissing ?? false);
+        if (!l.tableMissing) {
+          fetch("/api/admin/logs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "admin_page_view", details: { section: "dashboard" } }),
+          }).catch(() => {});
+        }
       } catch {
         setError("Ошибка загрузки");
       } finally {
@@ -103,13 +112,13 @@ export default function AdminPage() {
           <p className="text-slate-400 text-sm mt-1">Статистика, активность, логи</p>
         </div>
         <Link
-          href="/dashboard"
+          href="/"
           className="text-slate-400 hover:text-white text-sm flex items-center gap-1"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          На дашборд
+          На главную
         </Link>
       </div>
 
@@ -193,15 +202,19 @@ export default function AdminPage() {
               </li>
             ))}
           </ul>
+        ) : logsTableMissing ? (
+          <p className="text-slate-500 text-sm">
+            Таблица admin_logs не найдена. Выполните миграцию supabase-migration-admin.sql в Supabase SQL Editor.
+          </p>
         ) : (
           <p className="text-slate-500 text-sm">
-            Логи пока пусты. Выполните миграцию supabase-migration-admin.sql для создания таблицы admin_logs.
+            Пока нет записей. Логи появятся при действиях админов.
           </p>
         )}
       </Card>
 
       <p className="text-slate-500 text-xs mt-4">
-        Админ: добавьте ADMIN_EMAIL в .env.local (например: ADMIN_EMAIL=admin@example.com). Через запятую — несколько админов.
+        Админ: добавьте ADMIN_EMAIL в .env.local. Через запятую — несколько админов.
       </p>
     </div>
   );
