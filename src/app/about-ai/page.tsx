@@ -45,8 +45,8 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 const aiModules = [
   {
     title: "Локальная нейросеть",
-    tech: "brain.js",
-    description: "Предсказание рисков рецидива на основе поведенческих паттернов",
+    tech: "SafeBet Neural Network",
+    description: "Собственная feedforward-сеть (6→8→4→1) для предсказания рисков рецидива на основе поведенческих паттернов",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
@@ -111,7 +111,7 @@ const neuralFeatures = [
 ];
 
 const techStack = [
-  { tech: "brain.js", purpose: "Нейросеть для предсказания рисков", independent: true },
+  { tech: "SafeBet Neural Network", purpose: "Нейросеть для предсказания рисков (6→8→4→1)", independent: true },
   { tech: "sentiment (AFINN-165)", purpose: "NLP-анализ текста дневника", independent: true },
   { tech: "Z-score алгоритм", purpose: "Детектор аномалий", independent: true },
   { tech: "OpenAI GPT-4o", purpose: "AI-чат поддержка", independent: false },
@@ -200,6 +200,96 @@ export default function AboutAIPage() {
         </motion.p>
       </section>
 
+      {/* Research: Эффективность AI при зависимостях */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          <motion.h2 variants={fadeUp} custom={0} className="text-2xl md:text-3xl font-bold text-white text-center mb-4">
+            Исследования эффективности AI при зависимостях
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={1} className="text-slate-400 text-center max-w-2xl mx-auto mb-8">
+            Применение AI в лечении зависимостей опирается на растущую доказательную базу
+          </motion.p>
+          <motion.div variants={fadeUp} custom={2} className="space-y-4 max-w-3xl mx-auto">
+            {[
+              {
+                title: "Predictive analytics и relapse prediction",
+                desc: "Исследования показывают, что машинное обучение позволяет прогнозировать риск рецидива на основе поведенческих паттернов с точностью выше случайной (e.g. Grüsser et al., 2004; Xuan & Li, 2002).",
+                href: "https://doi.org/10.1007/s10899-004-4580-0",
+              },
+              {
+                title: "Chatbots и цифровые вмешательства",
+                desc: "Систематические обзоры (Bhattacharjee & Acharya, 2020; Torous et al., 2020) свидетельствуют о потенциале chatbot-вмешательств для поддержки при зависимостях, особенно в сочетании с человеческой помощью.",
+                href: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7366943/",
+              },
+              {
+                title: "Personalized interventions",
+                desc: "JITAI (Just-In-Time Adaptive Interventions) и персонализированные рекомендации на основе данных показывают улучшение вовлечённости и исходов (Nahum-Shani et al., 2018).",
+                href: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5988588/",
+              },
+            ].map((item, i) => (
+              <Card key={i} className="border-dark-border">
+                <h4 className="text-white font-medium mb-1">{item.title}</h4>
+                <p className="text-slate-400 text-sm mb-2">{item.desc}</p>
+                <a href={item.href} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-xs">
+                  Источник →
+                </a>
+              </Card>
+            ))}
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* AI boundaries: Границы AI и роль специалистов */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          <motion.h2 variants={fadeUp} custom={0} className="text-2xl md:text-3xl font-bold text-white text-center mb-4">
+            Границы AI и роль специалистов
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={1} className="text-slate-400 text-center max-w-2xl mx-auto mb-8">
+            SafeBet AI — инструмент поддержки, а не замена профессиональной помощи
+          </motion.p>
+          <motion.div variants={fadeUp} custom={2} className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <Card className="border-accent/20">
+              <h4 className="text-accent font-medium mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                Что может AI
+              </h4>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>• Отслеживание паттернов и раннее предупреждение</li>
+                <li>• Эмоциональная поддержка и валидация</li>
+                <li>• Рекомендации по самопомощи и техникам</li>
+                <li>• Напоминание обратиться к специалисту</li>
+                <li>• 24/7 доступность для базовой поддержки</li>
+              </ul>
+            </Card>
+            <Card className="border-amber-500/20">
+              <h4 className="text-amber-400 font-medium mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                Чего AI не заменяет
+              </h4>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>• Диагностика и постановка диагноза</li>
+                <li>• Психотерапия и лечение</li>
+                <li>• Назначение медикаментов</li>
+                <li>• Кризисная интервенция (при суициде — звонок 8-800-2000-122)</li>
+                <li>• Юридическая или финансовая консультация</li>
+              </ul>
+            </Card>
+          </motion.div>
+          <motion.p variants={fadeUp} custom={3} className="text-slate-500 text-sm text-center mt-6 max-w-xl mx-auto">
+            При высоком уровне риска система рекомендует обратиться к психологу, аддиктологу или на горячую линию. AI дополняет, а не подменяет человеческую заботу.
+          </motion.p>
+        </motion.div>
+      </section>
+
       {/* Section 2: Architecture Overview */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <motion.div
@@ -264,7 +354,7 @@ export default function AboutAIPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
-                <div className="px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-xs font-medium text-center">brain.js</div>
+                <div className="px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-xs font-medium text-center">Neural</div>
                 <div className="px-3 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 text-xs font-medium text-center">sentiment</div>
                 <div className="px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-xs font-medium text-center">Z-score</div>
                 <div className="px-3 py-2 bg-purple-500/10 border border-purple-500/20 rounded-lg text-purple-400 text-xs font-medium text-center">GPT-4o</div>
@@ -979,7 +1069,7 @@ export default function AboutAIPage() {
               <div>
                 <h3 className="text-white font-semibold mb-1">Итого</h3>
                 <p className="text-slate-400 text-sm leading-relaxed">
-                  SafeBet AI использует <span className="text-accent font-medium">3 полностью независимых AI-модуля</span> (brain.js,
+                  SafeBet AI использует <span className="text-accent font-medium">3 полностью независимых AI-модуля</span> (нейросеть,
                   sentiment, Z-score), работающих локально без внешних API, и <span className="text-purple-400 font-medium">1 внешний
                   модуль</span> (GPT-4o) для чат-поддержки с полной анонимизацией данных.
                   Это обеспечивает баланс между мощностью AI и конфиденциальностью пользователей.

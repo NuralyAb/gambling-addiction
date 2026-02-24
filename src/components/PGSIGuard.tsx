@@ -9,8 +9,7 @@ export default function PGSIGuard({ children }: { children: React.ReactNode }) {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    // Don't redirect if already on the PGSI test page
-    if (pathname === "/pgsi-test") {
+    if (pathname === "/pgsi-test" || pathname?.startsWith("/admin")) {
       setChecked(true);
       return;
     }

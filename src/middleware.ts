@@ -27,5 +27,8 @@ export const config = {
     "/achievements/:path*",
     "/support/:path*",
     "/resources/:path*",
+    "/extension/:path*",
+    "/education/:path*",
+    "/admin/:path*",
   ],
 };

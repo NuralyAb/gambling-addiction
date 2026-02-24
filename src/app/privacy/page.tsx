@@ -9,6 +9,7 @@ const sections = [
   { id: "data-usage", title: "Как мы используем данные" },
   { id: "ai-processing", title: "AI и обработка данных" },
   { id: "data-storage", title: "Хранение данных" },
+  { id: "retention", title: "Сроки хранения и логи" },
   { id: "user-rights", title: "Права пользователя" },
   { id: "trusted-person", title: "Доверенное лицо" },
   { id: "chrome-extension", title: "Chrome расширение" },
@@ -241,13 +242,20 @@ export default function PrivacyPage() {
                       </div>
                       <div>
                         <h4 className="text-white font-medium mb-1">OpenAI (чат с AI-ассистентом)</h4>
-                        <p className="text-slate-400 text-sm">
-                          Для диалогового AI-ассистента мы используем API OpenAI. При отправке
-                          запросов к OpenAI мы применяем <span className="text-accent font-medium">анонимизацию данных</span>:
-                          ваше имя, email, телефон и другие идентифицирующие данные автоматически
-                          удаляются из контекста перед отправкой. OpenAI не хранит данные
-                          запросов, отправленных через API, для обучения своих моделей.
+                        <p className="text-slate-400 text-sm mb-3">
+                          Для диалогового AI-ассистента мы используем API OpenAI. Перед отправкой запросов
+                          в OpenAI применяется <span className="text-accent font-medium">анонимизация</span>:
+                          идентифицирующие данные не передаются. OpenAI не использует данные запросов
+                          через API для обучения моделей.
                         </p>
+                        <div className="bg-dark-lighter rounded p-3 border border-dark-border">
+                          <p className="text-slate-300 text-xs font-medium mb-2">Удаляемые поля перед отправкой в OpenAI:</p>
+                          <ul className="text-slate-400 text-xs space-y-1">
+                            <li>• user_id, email, имя, телефон — никогда не передаются</li>
+                            <li>• В тексте сообщений: email, номера телефонов, адреса — маскируются регулярными выражениями</li>
+                            <li>• В контекст попадает только: role (user/assistant) и обезличенный content</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -300,10 +308,38 @@ export default function PrivacyPage() {
               </Card>
             </section>
 
-            {/* 5. Права пользователя */}
+            {/* 4a. Сроки хранения и логи */}
+            <section id="retention">
+              <Card>
+                <SectionHeading number={5} title="Сроки хранения и логи" />
+                <p className="text-slate-400 mb-4">
+                  Политика хранения данных и логирования.
+                </p>
+                <div className="space-y-4">
+                  <div className="bg-dark rounded-lg p-4 border border-dark-border">
+                    <h4 className="text-white font-medium text-sm mb-2">Сроки хранения данных</h4>
+                    <ul className="text-slate-400 text-sm space-y-1.5">
+                      <li>• <span className="text-slate-300">Профиль, дневник, чат, тесты:</span> пока действует аккаунт; при удалении — удаление в течение 30 дней</li>
+                      <li>• <span className="text-slate-300">События блокировки (расширение):</span> 90 дней</li>
+                      <li>• <span className="text-slate-300">Экспорты данных:</span> не храним — генерируются по запросу</li>
+                    </ul>
+                  </div>
+                  <div className="bg-dark rounded-lg p-4 border border-dark-border">
+                    <h4 className="text-white font-medium text-sm mb-2">Политика хранения логов</h4>
+                    <ul className="text-slate-400 text-sm space-y-1.5">
+                      <li>• <span className="text-slate-300">Серверные логи (ошибки, запросы):</span> 30 дней</li>
+                      <li>• <span className="text-slate-300">Логи аудита (действия админов):</span> 1 год</li>
+                      <li>• Логи не содержат содержимого сообщений чата и записей дневника</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+            </section>
+
+            {/* 6. Права пользователя */}
             <section id="user-rights">
               <Card>
-                <SectionHeading number={5} title="Права пользователя" />
+                <SectionHeading number={6} title="Права пользователя" />
                 <p className="text-slate-400 mb-4">
                   В соответствии с принципами GDPR и лучшими практиками защиты данных, вы имеете
                   полный контроль над своей информацией.
@@ -333,10 +369,10 @@ export default function PrivacyPage() {
               </Card>
             </section>
 
-            {/* 6. Доверенное лицо */}
+            {/* 7. Доверенное лицо */}
             <section id="trusted-person">
               <Card>
-                <SectionHeading number={6} title="Доверенное лицо" />
+                <SectionHeading number={7} title="Доверенное лицо" />
                 <p className="text-slate-400 mb-6">
                   Функция доверенного лица позволяет подключить близкого человека, который будет
                   получать уведомления при обнаружении высокого уровня риска. Вот что доверенное лицо
@@ -395,10 +431,10 @@ export default function PrivacyPage() {
               </Card>
             </section>
 
-            {/* 7. Chrome расширение */}
+            {/* 8. Chrome расширение */}
             <section id="chrome-extension">
               <Card>
-                <SectionHeading number={7} title="Chrome расширение" />
+                <SectionHeading number={8} title="Chrome расширение" />
                 <p className="text-slate-400 mb-4">
                   Наше расширение для браузера Chrome помогает блокировать доступ к игорным сайтам.
                   Вот как оно работает с вашими данными:
@@ -451,10 +487,10 @@ export default function PrivacyPage() {
               </Card>
             </section>
 
-            {/* 8. Контакты */}
+            {/* 9. Контакты */}
             <section id="contacts">
               <Card>
-                <SectionHeading number={8} title="Контакты" />
+                <SectionHeading number={9} title="Контакты" />
                 <p className="text-slate-400 mb-6">
                   Если у вас есть вопросы о политике конфиденциальности или вы хотите
                   воспользоваться своими правами, свяжитесь с нами:

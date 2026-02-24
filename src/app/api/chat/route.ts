@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
+import { anonymizeText } from "@/lib/anonymize";
 import OpenAI from "openai";
 
 const SYSTEM_PROMPT = `Ты — сочувствующий помощник для людей, борющихся с игровой зависимостью. Ты работаешь на платформе помощи при лудомании SafeBet AI.
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
       .reverse()
       .map((m: { role: string; content: string }) => ({
         role: m.role as "user" | "assistant",
-        content: m.content,
+        content: anonymizeText(m.content),
       }));
   } catch (e) {
     console.warn("Chat: failed to load history", e);
@@ -93,14 +94,18 @@ export async function POST(req: Request) {
 
   const model = process.env.OPENAI_CHAT_MODEL?.trim() || "gpt-4o-mini";
 
+  const anonymizedMessage = anonymizeText(message);
+  const messagesForOpenAI = [
+    { role: "system" as const, content: SYSTEM_PROMPT },
+    ...chatHistory,
+    { role: "user" as const, content: anonymizedMessage },
+  ];
+
   let stream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
   try {
     stream = await openai.chat.completions.create({
       model,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        ...chatHistory,
-      ],
+      messages: messagesForOpenAI,
       stream: true,
       max_tokens: 500,
       temperature: 0.7,

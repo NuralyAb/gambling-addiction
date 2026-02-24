@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { checkAndAlert } from "@/app/api/alerts/route";
+import { checkAndAlert } from "@/lib/alerts";
 
 async function resolveUserId(authHeader: string | null): Promise<string | null> {
   if (!authHeader?.startsWith("Bearer ")) return null;
