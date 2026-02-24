@@ -189,7 +189,7 @@ export default function AchievementsPage() {
                 className="h-full rounded-full bg-gradient-to-r from-accent to-cyan-400"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+                transition={{ duration: 1, delay: 0.4, ease: "easeOut" as const }}
               />
             </div>
 

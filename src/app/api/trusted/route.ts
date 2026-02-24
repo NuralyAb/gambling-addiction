@@ -31,7 +31,7 @@ export async function GET(req: Request) {
   // Load pending unlock requests
   const { data: unlockRequests } = await supabase
     .from("unlock_requests")
-    .select("id, user_id, status, reason, created_at, reviewed_at")
+    .select("id, user_id, status, reason, what_changed, plan, if_lose, impulsive_flag, created_at, reviewed_at")
     .in("user_id", userIds)
     .order("created_at", { ascending: false })
     .limit(20);

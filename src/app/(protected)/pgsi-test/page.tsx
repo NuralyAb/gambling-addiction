@@ -206,7 +206,7 @@ export default function PGSITestPage() {
                       strokeDashoffset:
                         2 * Math.PI * 52 * (1 - result.totalScore / 27),
                     }}
-                    transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                    transition={{ duration: 1, delay: 0.3, ease: "easeOut" as const }}
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -306,7 +306,7 @@ export default function PGSITestPage() {
             className="h-full bg-accent rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.3, ease: "easeOut" as const }}
           />
         </div>
       </div>
@@ -320,7 +320,7 @@ export default function PGSITestPage() {
             initial={{ opacity: 0, x: direction * 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: direction * -50 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            transition={{ duration: 0.25, ease: "easeInOut" as const }}
           >
             <Card>
               <div className="mb-6">

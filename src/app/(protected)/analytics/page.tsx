@@ -69,15 +69,18 @@ function ItemIcon({ name }: { name: string }) {
   );
 }
 
+// Эквиваленты в тенге (Казахстан)
 const PURCHASABLE_ITEMS = [
+  { name: "3 мес. спортзала", price: 45_000 },
   { name: "Библиотека на 100 книг", price: 75_000 },
   { name: "Курс обучения", price: 120_000 },
+  { name: "2 мес. аренды (1-к)", price: 150_000 },
   { name: "Игровая консоль + игры", price: 150_000 },
   { name: "Полный гардероб", price: 200_000 },
   { name: "iPhone", price: 300_000 },
   { name: "Новый ноутбук", price: 350_000 },
   { name: "Абонемент в зал ×12 мес", price: 420_000 },
-  { name: "Отпуск на море", price: 500_000 },
+  { name: "Авиабилеты + отпуск", price: 500_000 },
   { name: "Ремонт комнаты", price: 600_000 },
   { name: "Первый взнос на авто", price: 800_000 },
 ];
@@ -162,6 +165,27 @@ function SummaryCards({ totalLost, totalSaved, monthlySpent, avgPerEpisode }: { 
         </Card>
       ))}
     </div>
+  );
+}
+
+/* ── Loss Projection (если паттерн сохранится) ── */
+function LossProjection({ avgMonthlySpend }: { avgMonthlySpend: number }) {
+  const months = 6;
+  const projected = avgMonthlySpend * months;
+  if (avgMonthlySpend <= 0) return null;
+  return (
+    <Card>
+      <h2 className="text-lg font-semibold text-white mb-1">Прогноз потерь</h2>
+      <p className="text-sm text-slate-500 mb-4">
+        Если текущий паттерн сохранится, через {months} мес. вы потеряете:
+      </p>
+      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+        <p className="text-2xl font-bold text-red-400">{formatMoney(projected)}</p>
+        <p className="text-xs text-slate-500 mt-1">
+          При среднем расходе {formatMoney(avgMonthlySpend)}/мес на игру
+        </p>
+      </div>
+    </Card>
   );
 }
 
@@ -558,6 +582,8 @@ export default function AnalyticsPage() {
             monthlySpent={data.monthlySpent ?? 0}
             avgPerEpisode={avgPerEpisode}
           />
+
+          <LossProjection avgMonthlySpend={avgMonthlySpend} />
 
           <WhatCouldYouBuy totalLost={totalLost} />
 

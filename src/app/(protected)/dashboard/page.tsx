@@ -164,7 +164,7 @@ interface AIAnalysis {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.45, ease: "easeOut" } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.45, ease: "easeOut" as const } }),
 };
 
 export default function DashboardPage() {
@@ -252,7 +252,7 @@ export default function DashboardPage() {
                     className={`h-full rounded-full ${risk!.bg}`}
                     initial={{ width: 0 }}
                     animate={{ width: `${(data.pgsi.total_score / 27) * 100}%` }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    transition={{ duration: 0.8, ease: "easeOut" as const }}
                   />
                 </div>
                 <div className="flex items-center justify-between mt-3">
@@ -415,7 +415,7 @@ export default function DashboardPage() {
                         }`}
                         initial={{ width: 0 }}
                         animate={{ width: `${nn.riskScore}%` }}
-                        transition={{ duration: 1, ease: "easeOut" }}
+                        transition={{ duration: 1, ease: "easeOut" as const }}
                       />
                     </div>
                     <div className="flex items-center justify-between">

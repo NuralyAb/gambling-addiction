@@ -96,6 +96,13 @@ interface AIData {
       timePatterns: { peakHour: number | null; nightRatio: number };
       blockAttempts: { mean: number; stdDev: number; total: number; anomalies: AnomalyItem[] };
     };
+    behavioralDNA?: {
+      archetype: string;
+      label: string;
+      description: string;
+      insight: string;
+      confidence: number;
+    };
   };
   combinedRisk: {
     neuralScore: number;
@@ -130,7 +137,7 @@ function RadialGauge({ value, max, color, size = 120, strokeWidth = 8 }: {
         strokeDasharray={circumference}
         initial={{ strokeDashoffset: circumference }}
         animate={{ strokeDashoffset: circumference * (1 - pct) }}
-        transition={{ duration: 1.4, ease: "easeOut", delay: 0.3 }}
+        transition={{ duration: 1.4, ease: "easeOut" as const, delay: 0.3 }}
       />
     </svg>
   );
@@ -162,7 +169,7 @@ function StatusPill({ level, label }: { level: "low" | "medium" | "high"; label:
 }
 
 const stagger = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } };
-const fadeSlide = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } };
+const fadeSlide = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 
 export default function AIInsightsPage() {
   const [data, setData] = useState<AIData | null>(null);
@@ -197,6 +204,7 @@ export default function AIInsightsPage() {
   const nn = data.modules.neuralNetwork;
   const sent = data.modules.sentimentAnalysis;
   const anom = data.modules.anomalyDetector;
+  const dna = data.modules.behavioralDNA;
   const combined = data.combinedRisk;
 
   const riskColor = nn.prediction.riskLevel === "HIGH" ? "#ef4444" :
@@ -209,8 +217,9 @@ export default function AIInsightsPage() {
 
   const modules = [
     { id: 0, label: "GBM-модель", sub: nn.meta.algorithm || nn.meta.architecture, color: "emerald" },
-    { id: 1, label: "NLP-анализ", sub: "AFINN-165", color: "blue" },
-    { id: 2, label: "Детектор аномалий", sub: "Z-Score", color: "amber" },
+    { id: 1, label: "Поведенческий профиль", sub: dna?.label || "DNA", color: "purple" },
+    { id: 2, label: "NLP-анализ", sub: "AFINN-165", color: "blue" },
+    { id: 3, label: "Детектор аномалий", sub: "Z-Score", color: "amber" },
   ];
 
   return (
@@ -268,7 +277,7 @@ export default function AIInsightsPage() {
                     "bg-slate-500/10 border-slate-500/20"
                   } border flex items-center justify-center`}
                   animate={{ rotate: [0, 2, -2, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" as const }}
                 >
                   <svg className={`w-7 h-7 ${
                     sent.trend.trend === "improving" ? "text-emerald-400" :
@@ -347,13 +356,17 @@ export default function AIInsightsPage() {
               ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
               : m.color === "blue"
                 ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                : "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                : m.color === "purple"
+                  ? "bg-purple-500/10 text-purple-400 border-purple-500/30"
+                  : "bg-amber-500/10 text-amber-400 border-amber-500/30";
             const dotClasses = isActive
               ? m.color === "emerald"
                 ? "bg-emerald-400"
                 : m.color === "blue"
                   ? "bg-blue-400"
-                  : "bg-amber-400"
+                  : m.color === "purple"
+                    ? "bg-purple-400"
+                    : "bg-amber-400"
               : "bg-slate-600";
             return (
               <button key={m.id} onClick={() => setActiveModule(m.id)}
@@ -486,7 +499,7 @@ export default function AIInsightsPage() {
                             }`}
                             initial={{ width: 0 }}
                             animate={{ width: `${Math.max(f.normalizedValue * 100, 3)}%` }}
-                            transition={{ duration: 0.8, delay: 0.3 + i * 0.1, ease: "easeOut" }}
+                            transition={{ duration: 0.8, delay: 0.3 + i * 0.1, ease: "easeOut" as const }}
                           />
                         </div>
                       </motion.div>
@@ -499,6 +512,44 @@ export default function AIInsightsPage() {
         )}
 
         {activeModule === 1 && (
+          <motion.div key="dna" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }}>
+            <Card>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-lg font-semibold text-white">Поведенческий профиль (Behavioral DNA)</h2>
+                  <p className="text-xs text-slate-500">Персонализированный архетип на основе паттернов</p>
+                </div>
+                <span className="text-[10px] px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  {dna ? `${Math.round(dna.confidence * 100)}% уверенность` : "—"}
+                </span>
+              </div>
+
+              <div className="space-y-6">
+                {dna ? (
+                  <>
+                    <div className="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20">
+                      <p className="text-sm text-slate-400 mb-1">Ваш архетип</p>
+                      <p className="text-xl font-semibold text-white">{dna.label}</p>
+                      <p className="text-sm text-slate-300 mt-2">{dna.description}</p>
+                    </div>
+                    <div className="p-4 rounded-xl bg-accent/5 border border-accent/20">
+                      <p className="text-sm text-slate-400 mb-1">Инсайт для вас</p>
+                      <p className="text-slate-200 font-medium">&quot;{dna.insight}&quot;</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="py-12 text-center text-slate-500">
+                    <p>Недостаточно данных для определения профиля.</p>
+                    <p className="text-sm mt-2">Добавьте эпизоды в дневник с настроением и триггерами.</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
+        {activeModule === 2 && (
           <motion.div key="sent" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }}>
             <Card>
@@ -597,7 +648,7 @@ export default function AIInsightsPage() {
           </motion.div>
         )}
 
-        {activeModule === 2 && (
+        {activeModule === 3 && (
           <motion.div key="anom" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }}>
             <Card>

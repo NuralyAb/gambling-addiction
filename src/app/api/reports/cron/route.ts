@@ -30,7 +30,10 @@ export async function POST(req: Request) {
   }
 
   for (const user of users) {
-    const freq = user.report_frequency || "weekly";
+    // Dynamic frequency by risk: LOW → weekly, MEDIUM → every_3_days, HIGH → daily (если не задано вручную)
+    const riskScore = user.risk_score ?? 0;
+    const autoFreq = riskScore >= 61 ? "daily" : riskScore >= 31 ? "every_3_days" : "weekly";
+    const freq = user.report_frequency === "off" ? "off" : (user.report_frequency || autoFreq);
     const lastSent = user.last_report_sent ? new Date(user.last_report_sent) : null;
     const hoursSinceLast = lastSent ? (now.getTime() - lastSent.getTime()) / 3600000 : Infinity;
 

@@ -48,7 +48,8 @@ npm run migrate:admin # Миграция admin_logs (нужен DATABASE_URL и�
 - `supabase-migration-admin.sql` — таблица admin_logs
 - `supabase-migration-extension.sql` — extension_tokens, block_events
 - `supabase-migration-telegram.sql` — колонки Telegram в users
-- `supabase-migration-features.sql` — last_alert_sent
+- `supabase-migration-features.sql` — last_alert_sent, last_preventive_sent
+- `supabase-migration-unlock-friction.sql` — what_changed, plan, if_lose, impulsive_flag в unlock_requests
 
 ## AI-модули (кратко)
 

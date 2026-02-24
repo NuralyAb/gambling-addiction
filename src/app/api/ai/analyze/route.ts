@@ -7,6 +7,7 @@ import type { BehavioralFeatures } from "@/lib/ai/neural-risk";
 import { analyzeTrend, MODULE_META as SENTIMENT_META } from "@/lib/ai/sentiment-analysis";
 import { analyzeAnomalies, MODULE_META as ANOMALY_META } from "@/lib/ai/anomaly-detector";
 import type { BehaviorData, DataPoint } from "@/lib/ai/anomaly-detector";
+import { getBehavioralArchetype } from "@/lib/ai/behavioral-dna";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -21,7 +22,7 @@ export async function GET() {
   const since = thirtyDaysAgo.toISOString();
 
   // Fetch all data in parallel
-  const [episodesRes, allDiaryRes, blockRes, userRes] = await Promise.all([
+  const [episodesRes, allDiaryRes, blockRes, unlockRes, userRes] = await Promise.all([
     supabase
       .from("diary_entries")
       .select("date, amount, duration, mood_before, mood_after, triggers, notes")
@@ -42,6 +43,12 @@ export async function GET() {
       .gte("created_at", since)
       .order("created_at", { ascending: true }),
     supabase
+      .from("unlock_requests")
+      .select("created_at")
+      .eq("user_id", userId)
+      .gte("created_at", since)
+      .order("created_at", { ascending: true }),
+    supabase
       .from("users")
       .select("created_at")
       .eq("id", userId)
@@ -51,6 +58,7 @@ export async function GET() {
   const episodes = episodesRes.data || [];
   const allDiary = allDiaryRes.data || [];
   const blockEvents = blockRes.data || [];
+  const unlockRequests = unlockRes.data || [];
 
   // ═══════ MODULE 1: Neural Network Risk Prediction ═══════
 
@@ -100,8 +108,8 @@ export async function GET() {
     streakDays = Math.floor((now.getTime() - regDate.getTime()) / 86400000);
   }
 
-  const unlockRequests7 = blockEvents.filter(
-    (e) => new Date(e.created_at) >= sevenDaysAgo
+  const unlockRequests7 = unlockRequests.filter(
+    (r) => new Date(r.created_at) >= sevenDaysAgo
   ).length;
   const blockedDomains7 = new Set(
     blockEvents
@@ -124,6 +132,13 @@ export async function GET() {
   };
 
   const neuralPrediction = predictRisk(features);
+
+  // ═══════ MODULE 1b: Behavioral DNA Profile ═══════
+  const triggersList = Array.from(triggers);
+  const archetype = getBehavioralArchetype({
+    ...features,
+    triggers: triggersList,
+  });
 
   // ═══════ MODULE 2: NLP Sentiment Analysis ═══════
 
@@ -222,6 +237,13 @@ export async function GET() {
           triggerDiversity: features.triggerDiversity,
           streakDays: features.streakDays,
         },
+      },
+      behavioralDNA: {
+        archetype: archetype.archetype,
+        label: archetype.label,
+        description: archetype.description,
+        insight: archetype.insight,
+        confidence: archetype.confidence,
       },
       sentimentAnalysis: {
         meta: SENTIMENT_META,

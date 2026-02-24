@@ -20,6 +20,10 @@ interface UnlockRequest {
   userTg: string;
   status: "pending" | "approved" | "rejected";
   reason: string;
+  what_changed?: string;
+  plan?: string;
+  if_lose?: string;
+  impulsive_flag?: boolean;
   created_at: string;
   reviewed_at: string | null;
 }
@@ -754,10 +758,14 @@ function UnlockRequestCard({
             {r.userName}
             {r.userTg ? ` (@${r.userTg})` : ""}
           </p>
-          {r.reason && (
-            <p className="text-sm text-slate-400 mt-1">
-              Причина: <em className="text-slate-300">{r.reason}</em>
-            </p>
+          {(r.what_changed || r.plan || r.if_lose || r.reason) && (
+            <div className="text-sm text-slate-400 mt-1 space-y-1">
+              {r.what_changed && <p><span className="text-slate-500">Что изменилось:</span> <em className="text-slate-300">{r.what_changed}</em></p>}
+              {r.plan && <p><span className="text-slate-500">План:</span> <em className="text-slate-300">{r.plan}</em></p>}
+              {r.if_lose && <p><span className="text-slate-500">Если проиграю:</span> <em className="text-slate-300">{r.if_lose}</em></p>}
+              {!r.what_changed && !r.plan && !r.if_lose && r.reason && <p>Причина: <em className="text-slate-300">{r.reason}</em></p>}
+              {r.impulsive_flag && <p className="text-amber-400 text-xs">⚠️ Короткие ответы — возможный импульс</p>}
+            </div>
           )}
           <p className="text-xs text-slate-500 mt-1.5">
             {new Date(r.created_at).toLocaleString("ru-RU")} ·{" "}

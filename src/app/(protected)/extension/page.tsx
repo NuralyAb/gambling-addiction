@@ -30,7 +30,16 @@ export default function ExtensionPage() {
   const [revoking, setRevoking] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showToken, setShowToken] = useState(false);
-  const [tab, setTab] = useState<"setup" | "stats">("setup");
+  const [tab, setTab] = useState<"setup" | "stats" | "unlock">("setup");
+  const [unlockPauseLeft, setUnlockPauseLeft] = useState(30);
+  const [unlockCanSubmit, setUnlockCanSubmit] = useState(false);
+  const [whatChanged, setWhatChanged] = useState("");
+  const [plan, setPlan] = useState("");
+  const [ifLose, setIfLose] = useState("");
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const [unlockError, setUnlockError] = useState("");
+  const [unlockSuccess, setUnlockSuccess] = useState(false);
+  const [pendingRequest, setPendingRequest] = useState<{ status: string } | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -53,6 +62,38 @@ export default function ExtensionPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Load unlock requests when on unlock tab
+  useEffect(() => {
+    if (tab === "unlock") {
+      fetch("/api/unlock-request")
+        .then((r) => r.ok ? r.json() : [])
+        .then((data) => {
+          const pending = Array.isArray(data) ? data.find((r: { status: string }) => r.status === "pending") : null;
+          setPendingRequest(pending || null);
+        })
+        .catch(() => {});
+    }
+  }, [tab]);
+
+  // Reset 30s pause when switching to unlock tab
+  useEffect(() => {
+    if (tab === "unlock") {
+      setUnlockPauseLeft(30);
+      setUnlockCanSubmit(false);
+    }
+  }, [tab]);
+
+  // 30 second forced pause before unlock button
+  useEffect(() => {
+    if (tab !== "unlock" || unlockCanSubmit) return;
+    if (unlockPauseLeft <= 0) {
+      setUnlockCanSubmit(true);
+      return;
+    }
+    const t = setInterval(() => setUnlockPauseLeft((n) => Math.max(0, n - 1)), 1000);
+    return () => clearInterval(t);
+  }, [tab, unlockPauseLeft, unlockCanSubmit]);
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -93,6 +134,7 @@ export default function ExtensionPage() {
   const tabs = [
     { id: "setup" as const, label: "Установка" },
     { id: "stats" as const, label: "Статистика" },
+    { id: "unlock" as const, label: "Запрос разблокировки" },
   ];
 
   if (loading) {
@@ -361,6 +403,125 @@ export default function ExtensionPage() {
               <p className="text-sm text-slate-500 text-center py-4">
                 Нет событий блокировки
               </p>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {tab === "unlock" && (
+        <div className="space-y-6">
+          <Card>
+            <h3 className="text-white font-semibold mb-2">Запрос на снятие блокировки</h3>
+            <p className="text-sm text-slate-500 mb-4">
+              Перед отправкой запроса доверенному лицу необходимо ответить на три вопроса.
+              Это помогает выйти из импульса и обдумать решение.
+            </p>
+
+            {pendingRequest ? (
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                <p className="text-amber-400 font-medium">Запрос ожидает ответа</p>
+                <p className="text-sm text-slate-400 mt-1">
+                  Доверенное лицо получит уведомление в Telegram. Ожидайте решения.
+                </p>
+              </div>
+            ) : unlockSuccess ? (
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <p className="text-emerald-400 font-medium">Запрос отправлен</p>
+                <p className="text-sm text-slate-400 mt-1">
+                  Доверенное лицо получит уведомление в Telegram.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                      Что изменилось с момента блокировки?
+                    </label>
+                    <textarea
+                      placeholder="Опишите минимум 20 символов..."
+                      value={whatChanged}
+                      onChange={(e) => setWhatChanged(e.target.value)}
+                      rows={3}
+                      className="w-full px-4 py-2.5 bg-dark-lighter border border-dark-border rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent min-h-[80px]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                      Какой план на ближайшие дни?
+                    </label>
+                    <textarea
+                      placeholder="Опишите минимум 20 символов..."
+                      value={plan}
+                      onChange={(e) => setPlan(e.target.value)}
+                      rows={3}
+                      className="w-full px-4 py-2.5 bg-dark-lighter border border-dark-border rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent min-h-[80px]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                      Что будет, если проиграешь?
+                    </label>
+                    <textarea
+                      placeholder="Опишите минимум 20 символов..."
+                      value={ifLose}
+                      onChange={(e) => setIfLose(e.target.value)}
+                      rows={3}
+                      className="w-full px-4 py-2.5 bg-dark-lighter border border-dark-border rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent min-h-[80px]"
+                    />
+                  </div>
+                </div>
+
+                {!unlockCanSubmit && (
+                  <div className="mb-6 p-4 rounded-xl bg-dark-lighter border border-dark-border">
+                    <p className="text-sm text-slate-400">
+                      Подождите <span className="text-accent font-bold">{unlockPauseLeft}</span> сек. перед отправкой.
+                      Это даёт время обдумать решение.
+                    </p>
+                  </div>
+                )}
+
+                {unlockError && (
+                  <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                    {unlockError}
+                  </div>
+                )}
+
+                <Button
+                  className="w-full"
+                  disabled={!unlockCanSubmit || !whatChanged.trim() || !plan.trim() || !ifLose.trim()
+                    || whatChanged.length < 20 || plan.length < 20 || ifLose.length < 20}
+                  loading={unlockLoading}
+                  onClick={async () => {
+                    setUnlockError("");
+                    setUnlockLoading(true);
+                    try {
+                      const res = await fetch("/api/unlock-request", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          what_changed: whatChanged.trim(),
+                          plan: plan.trim(),
+                          if_lose: ifLose.trim(),
+                        }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok) {
+                        setUnlockError(data.error || "Ошибка");
+                        return;
+                      }
+                      setUnlockSuccess(true);
+                      setPendingRequest({ status: "pending" });
+                    } catch {
+                      setUnlockError("Ошибка соединения");
+                    } finally {
+                      setUnlockLoading(false);
+                    }
+                  }}
+                >
+                  Отправить запрос доверенному лицу
+                </Button>
+              </>
             )}
           </Card>
         </div>
