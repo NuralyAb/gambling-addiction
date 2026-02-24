@@ -37,7 +37,7 @@ export default function HelpPage() {
   }, [validTab]);
 
   return (
-    <div className="space-y-6 pb-8 max-w-2xl">
+    <div className="space-y-6 pb-8 w-full min-w-0">
       <div>
         <h1 className="text-2xl font-bold text-white">Помощь</h1>
         <p className="text-slate-400 mt-1">Поговорить, узнать, найти поддержку</p>
@@ -73,7 +73,7 @@ export default function HelpPage() {
               <a href="tel:88002000122" className="text-accent hover:underline">8-800-2000-122</a>
             </p>
           </div>
-          <Card className="p-4">
+          <Card className="p-4 overflow-hidden min-w-0">
             <ChatWidget compact />
           </Card>
         </div>

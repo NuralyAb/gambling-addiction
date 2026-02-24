@@ -62,18 +62,18 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.02, 0.3) }}
-      className={`flex items-start gap-3 ${isUser ? "flex-row-reverse" : ""}`}
+      className={`flex items-start gap-2 sm:gap-3 ${isUser ? "flex-row-reverse" : ""} min-w-0`}
     >
       {!isUser && <AIAvatar />}
-      <div className={`max-w-[85%] sm:max-w-[80%] ${isUser ? "items-end" : ""}`}>
+      <div className={`min-w-0 max-w-[85%] sm:max-w-[80%] flex flex-col ${isUser ? "items-end" : ""}`}>
         <div
-          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+          className={`px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-sm leading-relaxed break-words ${
             isUser
               ? "bg-accent text-dark rounded-tr-sm"
               : "bg-dark-card border border-dark-border text-slate-200 rounded-tl-sm"
           }`}
         >
-          <p className="whitespace-pre-wrap">{message.content}</p>
+          <p className="whitespace-pre-wrap break-words">{message.content}</p>
         </div>
         <p className={`text-[10px] text-slate-600 mt-1 ${isUser ? "text-right" : ""}`}>
           {formatTime(message.created_at)}
@@ -212,8 +212,8 @@ export default function ChatWidget({ className = "", compact = false }: ChatWidg
   };
 
   return (
-    <div className={`flex flex-col min-h-0 ${compact ? "h-[400px]" : "h-[calc(100vh-16rem)]"} ${className}`}>
-      <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+    <div className={`flex flex-col min-h-0 min-w-0 w-full ${compact ? "h-[400px] sm:h-[450px]" : "h-[calc(100vh-16rem)]"} ${className}`}>
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-4 pr-2 -mr-2">
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
@@ -235,10 +235,10 @@ export default function ChatWidget({ className = "", compact = false }: ChatWidg
         )}
 
         {streaming && (
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-2 sm:gap-3 min-w-0">
             <AIAvatar />
-            <div className="max-w-[85%] sm:max-w-[80%]">
-              <div className="bg-dark-card border border-dark-border rounded-2xl rounded-tl-sm px-4 py-3">
+            <div className="min-w-0 max-w-[85%] sm:max-w-[80%]">
+              <div className="bg-dark-card border border-dark-border rounded-2xl rounded-tl-sm px-3 py-2.5 sm:px-4 sm:py-3">
                 {streamingText ? (
                   <p className="text-slate-200 text-sm whitespace-pre-wrap leading-relaxed">
                     {streamingText}
@@ -256,12 +256,12 @@ export default function ChatWidget({ className = "", compact = false }: ChatWidg
       </div>
 
       {messages.length === 0 && !streaming && (
-        <div className="flex flex-wrap gap-2 py-3">
+        <div className="flex flex-wrap gap-2 py-3 shrink-0">
           {QUICK_MESSAGES.map((msg) => (
             <button
               key={msg}
               onClick={() => sendMessage(msg)}
-              className="px-3 py-2 bg-dark-card border border-dark-border rounded-lg text-sm text-slate-400 hover:text-white hover:border-accent/30 transition-colors"
+              className="px-2.5 py-1.5 sm:px-3 sm:py-2 bg-dark-card border border-dark-border rounded-lg text-xs sm:text-sm text-slate-400 hover:text-white hover:border-accent/30 transition-colors break-words max-w-full"
             >
               {msg}
             </button>
@@ -269,8 +269,8 @@ export default function ChatWidget({ className = "", compact = false }: ChatWidg
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="pt-3 border-t border-dark-border mt-3">
-        <div className="flex gap-2 items-end">
+      <form onSubmit={handleSubmit} className="pt-3 border-t border-dark-border mt-3 shrink-0 min-w-0">
+        <div className="flex gap-2 items-end min-w-0">
           <textarea
             ref={inputRef}
             value={input}
@@ -279,7 +279,7 @@ export default function ChatWidget({ className = "", compact = false }: ChatWidg
             rows={1}
             placeholder="Напишите сообщение..."
             disabled={streaming}
-            className="flex-1 px-4 py-3 bg-dark-lighter border border-dark-border rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 resize-none transition-colors disabled:opacity-50 text-sm"
+            className="flex-1 min-w-0 px-3 py-2.5 sm:px-4 sm:py-3 bg-dark-lighter border border-dark-border rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 resize-none transition-colors disabled:opacity-50 text-sm"
             style={{ maxHeight: 120 }}
             onInput={(e) => {
               const t = e.currentTarget;
@@ -287,7 +287,7 @@ export default function ChatWidget({ className = "", compact = false }: ChatWidg
               t.style.height = Math.min(t.scrollHeight, 120) + "px";
             }}
           />
-          <Button type="submit" disabled={!input.trim() || streaming} className="shrink-0 !px-4 !py-3">
+          <Button type="submit" disabled={!input.trim() || streaming} className="shrink-0 !px-3 !py-2.5 sm:!px-4 sm:!py-3">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
@@ -295,13 +295,13 @@ export default function ChatWidget({ className = "", compact = false }: ChatWidg
         </div>
 
         {messages.length > 0 && !streaming && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
+          <div className="flex flex-wrap gap-1.5 mt-2 min-w-0">
             {QUICK_MESSAGES.map((msg) => (
               <button
                 key={msg}
                 type="button"
                 onClick={() => sendMessage(msg)}
-                className="px-2.5 py-1 bg-dark-lighter border border-dark-border rounded-md text-xs text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-colors"
+                className="px-2 py-1 sm:px-2.5 bg-dark-lighter border border-dark-border rounded-md text-xs text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-colors break-words max-w-full"
               >
                 {msg}
               </button>
