@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
@@ -40,6 +41,7 @@ export default function ExtensionPage() {
   const [unlockError, setUnlockError] = useState("");
   const [unlockSuccess, setUnlockSuccess] = useState(false);
   const [pendingRequest, setPendingRequest] = useState<{ status: string } | null>(null);
+  const [showRevokeModal, setShowRevokeModal] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -110,8 +112,14 @@ export default function ExtensionPage() {
     }
   };
 
+  const handleRevokeClick = () => {
+    setShowRevokeModal(true);
+    fetch("/api/extension/disable-attempt", { method: "POST", credentials: "include" }).catch(() => {});
+  };
+
   const handleRevoke = async () => {
     if (!activeToken) return;
+    setShowRevokeModal(false);
     setRevoking(true);
     try {
       await fetch(`/api/extension/token?id=${activeToken.id}`, { method: "DELETE" });
@@ -146,6 +154,7 @@ export default function ExtensionPage() {
   }
 
   return (
+    <>
     <div className="max-w-3xl mx-auto space-y-6 min-w-0">
       {/* Header */}
       <div>
@@ -217,13 +226,13 @@ export default function ExtensionPage() {
               <h3 className="text-white font-semibold">Установите расширение</h3>
             </div>
             <p className="text-sm text-slate-400 mb-4">
-              Загрузите расширение из папки <code className="text-accent bg-accent/10 px-1.5 py-0.5 rounded text-xs">chrome-extension/</code> через Chrome в режиме разработчика.
+              Загрузите расширение из папки <code className="text-accent bg-accent/10 px-1.5 py-0.5 rounded text-xs">extension/</code> через Chrome в режиме разработчика.
             </p>
             <ol className="text-sm text-slate-400 space-y-2 ml-4 list-decimal">
               <li>Откройте <code className="text-slate-300 bg-dark/50 px-1.5 py-0.5 rounded text-xs">chrome://extensions</code></li>
               <li>Включите &quot;Режим разработчика&quot; (правый верхний угол)</li>
               <li>Нажмите &quot;Загрузить распакованное расширение&quot;</li>
-              <li>Выберите папку <code className="text-slate-300 bg-dark/50 px-1.5 py-0.5 rounded text-xs">chrome-extension</code> из проекта</li>
+              <li>Выберите папку <code className="text-slate-300 bg-dark/50 px-1.5 py-0.5 rounded text-xs">extension</code> из проекта</li>
             </ol>
           </Card>
 
@@ -273,7 +282,7 @@ export default function ExtensionPage() {
                   <Button variant="secondary" onClick={handleGenerate} loading={generating} className="flex-1">
                     Пересоздать токен
                   </Button>
-                  <Button variant="ghost" onClick={handleRevoke} loading={revoking} className="text-red-400 hover:text-red-300">
+                  <Button variant="ghost" onClick={handleRevokeClick} loading={revoking} className="text-red-400 hover:text-red-300">
                     Отключить
                   </Button>
                 </div>
@@ -527,5 +536,39 @@ export default function ExtensionPage() {
         </div>
       )}
     </div>
+
+    {showRevokeModal &&
+      typeof document !== "undefined" &&
+      createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70"
+          onClick={() => setShowRevokeModal(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="bg-dark-card border border-dark-border rounded-xl p-6 max-w-md w-full shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold text-white mb-4">Ты столько держался</h3>
+            <p className="text-slate-300 text-sm leading-relaxed mb-2">
+              Каждый день без срыва — это победа. Сейчас отключить блокировку — значит отдать контроль зависимости.
+            </p>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              Доверенное лицо уже получило уведомление. Подумай ещё раз — возможно, это импульс, который пройдёт.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="secondary" className="flex-1" onClick={() => setShowRevokeModal(false)}>
+                Передумал
+              </Button>
+              <Button variant="ghost" className="text-red-400 hover:text-red-300" onClick={handleRevoke} loading={revoking}>
+                Всё равно отключить
+              </Button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

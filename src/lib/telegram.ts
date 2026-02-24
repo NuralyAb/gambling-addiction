@@ -214,6 +214,22 @@ export async function sendUnlockRequestNotification(
   });
 }
 
+export async function sendDisableAttemptNotification(
+  trustedChatId: number | string,
+  userName: string,
+  userTg: string
+): Promise<void> {
+  const text = [
+    `⚠️ <b>Попытка отключить блокировку</b>`,
+    ``,
+    `Пользователь ${userTg ? "@" + userTg : userName || "—"} нажал «Отключить» на странице расширения.`,
+    ``,
+    `Он видит мотивационное сообщение. Токен пока не отозван — возможно, передумает.`,
+  ].join("\n");
+
+  await sendTelegramMessage(trustedChatId, text, { parse_mode: "HTML" });
+}
+
 export function computeRiskScore(data: {
   totalSessions: number;
   totalAmount: number;

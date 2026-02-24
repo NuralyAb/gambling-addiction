@@ -114,7 +114,7 @@ document.getElementById("connectBtn").addEventListener("click", async () => {
   }
 });
 
-// Disconnect button
+// Disconnect button — только удаляет токен локально. Отключение через страницу /extension
 document.getElementById("disconnectBtn").addEventListener("click", async () => {
   await chrome.storage.local.remove(["sba_token"]);
   showDisconnected();

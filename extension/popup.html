@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <div class="popup">
+<body class="popup-body">
+  <div class="popup popup-container">
     <!-- Header -->
     <div class="popup-header">
       <div class="logo">
@@ -58,6 +58,19 @@
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       Настройки
     </button>
+
+    <!-- Модалка при попытке отключить (внутри контейнера) -->
+    <div id="disableModal" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <h3 class="modal-title">Ты столько держался</h3>
+      <p class="modal-text">Каждый день без срыва — это победа. Сейчас отключить — значит отдать контроль зависимости.</p>
+      <p class="modal-text">Доверенное лицо уже получило уведомление. Подумай ещё раз — возможно, это импульс, который пройдёт.</p>
+      <div class="modal-buttons">
+        <button type="button" class="btn btn-primary" id="disableCancel">Передумал</button>
+        <button type="button" class="btn btn-danger" id="disableConfirm">Всё равно отключить</button>
+      </div>
+    </div>
+    </div>
   </div>
 
   <script src="popup.js"></script>
