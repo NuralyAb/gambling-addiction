@@ -463,7 +463,7 @@ function QuickActions() {
       ),
       label: "Поговорить с AI",
       sub: "Поддержка и советы",
-      href: "/support",
+      href: "/help?tab=chat",
     },
     {
       icon: (

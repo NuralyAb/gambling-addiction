@@ -381,7 +381,7 @@ export default function DashboardPage() {
               </div>
               <h2 className="text-lg font-semibold text-white">AI-анализ</h2>
             </div>
-            <Link href="/ai-insights" className="text-xs text-accent hover:underline">Подробнее</Link>
+            <Link href="/progress" className="text-xs text-accent hover:underline">Подробнее</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

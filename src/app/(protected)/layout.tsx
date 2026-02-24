@@ -11,11 +11,13 @@ export default function ProtectedLayout({
   return (
     <>
       <Navbar />
-      <div className="flex-1 max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-4 lg:gap-8 px-3 sm:px-4 py-4 sm:py-6 min-w-0">
+      <div className="flex-1 w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 lg:gap-8 px-4 sm:px-6 py-4 sm:py-6 min-w-0 overflow-x-hidden">
         <Sidebar />
-        <main className="flex-1 min-w-0 overflow-x-hidden">
+        <main className="flex-1 min-w-0 w-full overflow-x-hidden">
           <MobileNav />
-          <PGSIGuard>{children}</PGSIGuard>
+          <div className="pt-2 sm:pt-4">
+            <PGSIGuard>{children}</PGSIGuard>
+          </div>
         </main>
       </div>
       <Footer />

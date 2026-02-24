@@ -10,12 +10,13 @@ import type { BehaviorData, DataPoint } from "@/lib/ai/anomaly-detector";
 import { getBehavioralArchetype } from "@/lib/ai/behavioral-dna";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const userId = (session.user as { id: string }).id;
+    const userId = (session.user as { id: string }).id;
   const now = new Date();
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -295,4 +296,18 @@ export async function GET() {
       ],
     },
   });
+  } catch (err) {
+    console.error("AI analyze error:", err);
+    return NextResponse.json({
+      modules: {
+        neuralNetwork: {
+          prediction: { riskScore: 0, riskLevel: "LOW", daysUntilRelapse: 30, relapseProbability: 0, featureImportance: [] },
+          inputFeatures: { streakDays: 0 },
+        },
+        behavioralDNA: {},
+        sentimentAnalysis: { trend: { trend: "stable", entryCount: 0 } },
+      },
+      combinedRisk: { allWarnings: [] },
+    });
+  }
 }

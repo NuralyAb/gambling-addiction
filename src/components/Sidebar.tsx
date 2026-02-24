@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
   {
-    label: "Дашборд",
+    label: "Главная",
     href: "/dashboard",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,20 +24,11 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "AI-анализ",
-    href: "/ai-insights",
+    label: "Мой прогресс",
+    href: "/progress",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-      </svg>
-    ),
-  },
-  {
-    label: "Аналитика",
-    href: "/analytics",
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
       </svg>
     ),
   },
@@ -60,8 +51,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Поддержка",
-    href: "/support",
+    label: "Помощь",
+    href: "/help",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -69,16 +60,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Ресурсы",
-    href: "/resources",
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
-    ),
-  },
-  {
-    label: "Расширение",
+    label: "Блокировка",
     href: "/extension",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +143,7 @@ export function MobileNav() {
   const navItems = [...NAV_ITEMS, ...(isAdmin ? [ADMIN_ITEM] : [])];
 
   return (
-    <div className="lg:hidden flex overflow-x-auto gap-1.5 pb-3 -mx-3 sm:-mx-4 px-3 sm:px-4 scrollbar-hide snap-x snap-mandatory">
+    <div className="lg:hidden flex overflow-x-auto gap-2 pb-4 -mx-4 sm:-mx-6 px-4 sm:px-6 scrollbar-hide snap-x snap-mandatory">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         return (

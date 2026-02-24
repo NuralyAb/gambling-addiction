@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -218,7 +218,7 @@ function FeatureCard({
   title,
   description,
 }: {
-  variants?: object;
+  variants?: Variants;
   icon: React.ReactNode;
   title: string;
   description: string;

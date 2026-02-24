@@ -1,20 +1,10 @@
 import { withAuth } from "next-auth/middleware";
-import { NextRequest, NextResponse } from "next/server";
 
-const withAuthConfig = withAuth({
+export default withAuth({
   pages: {
     signIn: "/login",
   },
 });
-
-export default async function middleware(request: NextRequest, event: { waitUntil: (p: Promise<unknown>) => void }) {
-  try {
-    return await withAuthConfig(request, event);
-  } catch (err) {
-    console.error("Middleware error:", err);
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-}
 
 export const config = {
   matcher: [
@@ -22,9 +12,11 @@ export const config = {
     "/profile/:path*",
     "/pgsi-test/:path*",
     "/diary/:path*",
+    "/progress/:path*",
     "/analytics/:path*",
     "/ai-insights/:path*",
     "/achievements/:path*",
+    "/help/:path*",
     "/support/:path*",
     "/resources/:path*",
     "/extension/:path*",
