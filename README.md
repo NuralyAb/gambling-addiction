@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SafeBet AI
 
-## Getting Started
+Платформа помощи при игровой зависимости с AI-поддержкой: анализ поведения, предсказание рисков, персональные рекомендации, чат и уведомления доверенному лицу.
 
-First, run the development server:
+## Быстрый старт
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Переменные окружения (.env)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Переменная | Обязательно | Описание |
+|------------|-------------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Да | URL проекта Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Да | Anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Да | Service role key (серверные API) |
+| `NEXTAUTH_URL` | Да | URL приложения (http://localhost:3000) |
+| `NEXTAUTH_SECRET` | Да | Секрет для JWT |
+| `OPENAI_API_KEY` | Для чата | Ключ OpenAI (gpt-4o-mini) |
+| `RESEND_API_KEY` | Для email | Верификация, сброс пароля |
+| `TELEGRAM_BOT_TOKEN` | Для бота | Токен бота |
+| `ADMIN_EMAIL` | Для админки | Email админа (через запятую — несколько) |
 
-## Learn More
+## Документация
 
-To learn more about Next.js, take a look at the following resources:
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — стек, структура проекта, маршрутизация
+- **[docs/AI-MODULES.md](docs/AI-MODULES.md)** — нейросеть, sentiment, аномалии, чат: как устроено и почему
+- **[docs/FEATURES.md](docs/FEATURES.md)** — что работает: аутентификация, PGSI, дневник, расширение, Telegram, админка
+- **[docs/SECURITY.md](docs/SECURITY.md)** — анонимизация, RLS, сроки хранения
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Скрипты
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev          # Запуск dev-сервера
+npm run build        # Сборка
+npm run create-admin # Создать пользователя-админа (email из ADMIN_EMAIL)
+npm run migrate:admin # Миграция admin_logs (нужен DATABASE_URL или SUPABASE_ACCESS_TOKEN)
+```
 
-## Deploy on Vercel
+## Миграции БД
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Выполните в Supabase SQL Editor:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `supabase-migration-admin.sql` — таблица admin_logs
+- `supabase-migration-extension.sql` — extension_tokens, block_events
+- `supabase-migration-telegram.sql` — колонки Telegram в users
+- `supabase-migration-features.sql` — last_alert_sent
+
+## AI-модули (кратко)
+
+| Модуль | Локально | Назначение |
+|--------|----------|------------|
+| SafeBet Neural Network | Да | Предсказание риска рецидива (6→8→4→1) |
+| Sentiment (AFINN + RU) | Да | Анализ настроения по тексту дневника |
+| Z-score аномалии | Да | Выявление необычных паттернов |
+| OpenAI GPT-4o | Нет | Эмпатичный чат (с анонимизацией) |
+
+Подробнее: [docs/AI-MODULES.md](docs/AI-MODULES.md)
