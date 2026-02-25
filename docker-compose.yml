@@ -1,0 +1,35 @@
+# ============================================
+# SafeBet AI - Docker Compose для деплоя
+# ============================================
+# Использование:
+#   1. Создайте .env с переменными (см. ниже)
+#   2. docker compose up -d --build
+#   3. Приложение: http://localhost:3000
+#
+# Переменные окружения (обязательные):
+#   NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+#   NEXTAUTH_SECRET, NEXTAUTH_URL (https://your-domain.com)
+#   OPENAI_API_KEY (для AI-чата)
+# Опционально: RESEND_API_KEY, TELEGRAM_BOT_TOKEN, ADMIN_EMAIL, CRON_SECRET
+# ============================================
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: safebet-ai
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

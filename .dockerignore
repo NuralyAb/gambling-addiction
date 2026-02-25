@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build
+.next
+out
+build
+dist
+
+# Env (pass via docker-compose or host)
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python / ML (not needed for runtime)
+ml
+*.py
+__pycache__
+ml_venv
+venv
+.venv
+
+# Misc
+*.md
+!README.md
+.claude
+.orchids
+.cache
+*.log
