@@ -1,5 +1,5 @@
 # ============================================
-# NoBet VPN — WireGuard + AdGuard Home
+# NoBet VPN — WireGuard + Pi-hole
 # Блокировка сайтов букмекеров на уровне DNS
 # ============================================
 # Запуск вместе с основным проектом:
@@ -38,19 +38,22 @@ services:
       nobet-vpn:
         ipv4_address: 10.2.0.3
 
-  adguard:
-    image: adguard/adguardhome:latest
-    container_name: nobet-adguard
+  pihole:
+    image: docker.io/pihole/pihole:latest
+    container_name: nobet-pihole
     restart: unless-stopped
+    environment:
+      TZ: Europe/Almaty
+      WEBPASSWORD: ""  # пустой = без пароля, задайте пароль для продакшена
+      DNSMASQ_LISTENING: all
     volumes:
-      - nobet-adguard-work:/opt/adguardhome/work
-      - nobet-adguard-conf:/opt/adguardhome/conf
+      - nobet-pihole-etc:/etc/pihole
+      - nobet-pihole-dnsmasq:/etc/dnsmasq.d
     networks:
       nobet-vpn:
         ipv4_address: 10.2.0.100
-    # Web UI — порт 5181 (не конфликтует с nginx:80)
     ports:
-      - "5181:3000"
+      - "5181:80"
 
 networks:
   nobet-vpn:
@@ -62,5 +65,5 @@ networks:
 
 volumes:
   nobet-wireguard-config:
-  nobet-adguard-work:
-  nobet-adguard-conf:
+  nobet-pihole-etc:
+  nobet-pihole-dnsmasq:
