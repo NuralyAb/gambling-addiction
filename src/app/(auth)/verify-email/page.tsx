@@ -3,10 +3,13 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
 function VerifyEmailContent() {
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -15,7 +18,7 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (!token) {
       setStatus("error");
-      setMessage("Токен не найден в ссылке");
+      setMessage(t("tokenNotFound"));
       return;
     }
 
@@ -36,9 +39,9 @@ function VerifyEmailContent() {
       })
       .catch(() => {
         setStatus("error");
-        setMessage("Ошибка соединения с сервером");
+        setMessage(t("connectionError"));
       });
-  }, [token]);
+  }, [token, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -46,7 +49,7 @@ function VerifyEmailContent() {
         {status === "loading" && (
           <>
             <div className="w-12 h-12 border-4 border-accent/30 border-t-accent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-slate-400">Подтверждаем ваш email...</p>
+            <p className="text-slate-400">{t("verifying")}</p>
           </>
         )}
 
@@ -57,10 +60,10 @@ function VerifyEmailContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Email подтверждён!</h2>
+            <h2 className="text-xl font-bold text-white mb-2">{t("emailVerified")}</h2>
             <p className="text-slate-400 mb-6">{message}</p>
             <Link href="/login">
-              <Button className="w-full">Войти в аккаунт</Button>
+              <Button className="w-full">{t("loginToAccount")}</Button>
             </Link>
           </>
         )}
@@ -72,10 +75,10 @@ function VerifyEmailContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Ошибка</h2>
+            <h2 className="text-xl font-bold text-white mb-2">{tCommon("error")}</h2>
             <p className="text-slate-400 mb-6">{message}</p>
             <Link href="/register">
-              <Button variant="secondary" className="w-full">Попробовать снова</Button>
+              <Button variant="secondary" className="w-full">{t("tryAgain")}</Button>
             </Link>
           </>
         )}

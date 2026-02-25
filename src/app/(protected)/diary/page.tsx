@@ -2,37 +2,39 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 
-// ── Constants ──
+function useDiaryLabels() {
+  const t = useTranslations("diary");
+  return {
+    MOODS: [
+      { value: "terrible", label: t("moodTerrible") },
+      { value: "bad", label: t("moodBad") },
+      { value: "neutral", label: t("moodNeutral") },
+      { value: "good", label: t("moodGood") },
+      { value: "great", label: t("moodGreat") },
+    ],
+    PLATFORMS: [
+      { value: "casino", label: t("platformCasino") },
+      { value: "bookmaker", label: t("platformBookmaker") },
+      { value: "poker", label: t("platformPoker") },
+      { value: "slots", label: t("platformSlots") },
+      { value: "other", label: t("platformOther") },
+    ],
+    TRIGGERS: [
+      { value: "stress", label: t("triggerStress") },
+      { value: "boredom", label: t("triggerBoredom") },
+      { value: "loneliness", label: t("triggerLoneliness") },
+      { value: "alcohol", label: t("triggerAlcohol") },
+      { value: "ads", label: t("triggerAds") },
+      { value: "other", label: t("triggerOther") },
+    ],
+  };
+}
 
-const MOODS = [
-  { value: "terrible", label: "Ужасно" },
-  { value: "bad", label: "Плохо" },
-  { value: "neutral", label: "Нормально" },
-  { value: "good", label: "Хорошо" },
-  { value: "great", label: "Отлично" },
-];
-
-const PLATFORMS = [
-  { value: "casino", label: "Онлайн-казино" },
-  { value: "bookmaker", label: "Букмекер" },
-  { value: "poker", label: "Покер" },
-  { value: "slots", label: "Игровые автоматы" },
-  { value: "other", label: "Другое" },
-];
-
-const TRIGGERS = [
-  { value: "stress", label: "Стресс" },
-  { value: "boredom", label: "Скука" },
-  { value: "loneliness", label: "Одиночество" },
-  { value: "alcohol", label: "Алкоголь" },
-  { value: "ads", label: "Реклама" },
-  { value: "other", label: "Другое" },
-];
-
-function MoodIcon({ value, className = "w-5 h-5" }: { value: string; className?: string }) {
+function MoodIcon({ value, className = "w-5 h-5", label }: { value: string; className?: string; label?: string }) {
   const paths: Record<string, React.ReactNode> = {
     terrible: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />,
     bad: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />,
@@ -42,15 +44,11 @@ function MoodIcon({ value, className = "w-5 h-5" }: { value: string; className?:
   };
   const color = value === "terrible" || value === "bad" ? "text-red-400" : value === "good" || value === "great" ? "text-green-400" : "text-slate-400";
   return (
-    <span className={`inline-flex shrink-0 ${color}`} title={MOODS.find((m) => m.value === value)?.label}>
+    <span className={`inline-flex shrink-0 ${color}`} title={label}>
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">{paths[value] || paths.neutral}</svg>
     </span>
   );
 }
-
-const PLATFORM_LABEL: Record<string, string> = Object.fromEntries(
-  PLATFORMS.map((p) => [p.value, p.label])
-);
 
 // ── Types ──
 
@@ -87,6 +85,10 @@ function formatMoney(n: number) {
 // ── Page ──
 
 export default function DiaryPage() {
+  const t = useTranslations("diary");
+  const tCommon = useTranslations("common");
+  const { MOODS, PLATFORMS, TRIGGERS } = useDiaryLabels();
+  const PLATFORM_LABEL: Record<string, string> = Object.fromEntries(PLATFORMS.map((p) => [p.value, p.label]));
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -138,13 +140,13 @@ export default function DiaryPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Дневник</h1>
+          <h1 className="text-2xl font-bold text-white">{t("title")}</h1>
           <p className="text-slate-400 mt-1">
-            Отслеживайте поведение и прогресс
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setShowForm(!showForm)}>
-          {showForm ? "Отмена" : "Новая запись"}
+          {showForm ? tCommon("cancel") : t("newEntry")}
         </Button>
       </div>
 
@@ -157,7 +159,7 @@ export default function DiaryPage() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <NewEntryForm onSuccess={handleNewEntry} />
+            <NewEntryForm onSuccess={handleNewEntry} MOODS={MOODS} PLATFORMS={PLATFORMS} TRIGGERS={TRIGGERS} t={t} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -166,19 +168,19 @@ export default function DiaryPage() {
       <Card>
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Тип</label>
+            <label className="block text-xs text-slate-500 mb-1">{t("filterType")}</label>
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
               className="px-3 py-2 bg-dark-lighter border border-dark-border rounded-lg text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/50"
             >
-              <option value="">Все</option>
-              <option value="episode">Игровые эпизоды</option>
-              <option value="positive">Позитивные дни</option>
+              <option value="">{t("all")}</option>
+              <option value="episode">{t("filterEpisodes")}</option>
+              <option value="positive">{t("filterPositive")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs text-slate-500 mb-1">С</label>
+            <label className="block text-xs text-slate-500 mb-1">{t("filterDateFrom")}</label>
             <input
               type="date"
               value={filterDateFrom}
@@ -187,7 +189,7 @@ export default function DiaryPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-slate-500 mb-1">По</label>
+            <label className="block text-xs text-slate-500 mb-1">{t("filterDateTo")}</label>
             <input
               type="date"
               value={filterDateTo}
@@ -195,8 +197,8 @@ export default function DiaryPage() {
               className="px-3 py-2 bg-dark-lighter border border-dark-border rounded-lg text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/50"
             />
           </div>
-          <Button variant="secondary" size="sm" onClick={handleFilterApply}>
-            Применить
+            <Button variant="secondary" size="sm" onClick={handleFilterApply}>
+            {t("apply")}
           </Button>
           {(filterType || filterDateFrom || filterDateTo) && (
             <Button
@@ -210,7 +212,7 @@ export default function DiaryPage() {
                 setTimeout(() => loadEntries(1), 0);
               }}
             >
-              Сбросить
+              {t("reset")}
             </Button>
           )}
         </div>
@@ -228,9 +230,9 @@ export default function DiaryPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <p className="text-slate-400 mb-1">Записей не найдено</p>
+          <p className="text-slate-400 mb-1">{t("noEntriesFound")}</p>
           <p className="text-sm text-slate-500">
-            Создайте первую запись, чтобы начать отслеживание
+            {t("createFirstToStart")}
           </p>
         </Card>
       ) : (
@@ -242,7 +244,7 @@ export default function DiaryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.03 }}
             >
-              <EntryCard entry={entry} />
+              <EntryCard entry={entry} MOODS={MOODS} TRIGGERS={TRIGGERS} PLATFORM_LABEL={PLATFORM_LABEL} t={t} />
             </motion.div>
           ))}
         </div>
@@ -257,7 +259,7 @@ export default function DiaryPage() {
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
           >
-            &larr; Назад
+            &larr; {tCommon("back")}
           </Button>
           <span className="text-sm text-slate-500">
             {page} / {totalPages}
@@ -268,7 +270,7 @@ export default function DiaryPage() {
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
           >
-            Далее &rarr;
+            {tCommon("next")} &rarr;
           </Button>
         </div>
       )}
@@ -278,7 +280,15 @@ export default function DiaryPage() {
 
 // ── New Entry Form ──
 
-function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
+interface NewEntryFormProps {
+  onSuccess: () => void;
+  MOODS: { value: string; label: string }[];
+  PLATFORMS: { value: string; label: string }[];
+  TRIGGERS: { value: string; label: string }[];
+  t: (k: string) => string;
+}
+
+function NewEntryForm({ onSuccess, MOODS, PLATFORMS, TRIGGERS, t }: NewEntryFormProps) {
   const [type, setType] = useState<"episode" | "positive">("episode");
   const [date, setDate] = useState(() => {
     const now = new Date();
@@ -306,7 +316,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
     setError("");
 
     if (!moodBefore) {
-      setError("Выберите настроение ДО");
+      setError(t("selectMoodBefore"));
       return;
     }
 
@@ -335,13 +345,13 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Ошибка сохранения");
+        setError(data.error || t("saveError"));
         return;
       }
 
       onSuccess();
     } catch {
-      setError("Ошибка соединения");
+      setError(t("connectionError"));
     } finally {
       setSaving(false);
     }
@@ -353,7 +363,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
         {/* Type selector */}
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">
-            Тип записи
+            {t("entryType")}
           </label>
           <div className="flex gap-2">
             <button
@@ -366,7 +376,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
               }`}
             >
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              Игровой эпизод
+              {t("episodeEntry")}
             </button>
             <button
               type="button"
@@ -378,7 +388,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
               }`}
             >
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-              Позитивный день
+              {t("positiveDay")}
             </button>
           </div>
         </div>
@@ -386,7 +396,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
         {/* Date */}
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-1.5">
-            Дата и время
+            {t("dateTime")}
           </label>
           <input
             type="datetime-local"
@@ -408,7 +418,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Длительность (мин)
+                    {t("durationMin")}
                   </label>
                   <input
                     type="number"
@@ -422,7 +432,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                    Сумма потрачена
+                    {t("amountSpent")}
                   </label>
                   <input
                     type="number"
@@ -439,7 +449,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
               {/* Platform */}
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                  Платформа
+                  {t("platform")}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {PLATFORMS.map((p) => (
@@ -462,21 +472,21 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
               {/* Triggers */}
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                  Триггеры (можно несколько)
+                  {t("triggersSeveral")}
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {TRIGGERS.map((t) => (
+                  {TRIGGERS.map((tr) => (
                     <button
-                      key={t.value}
+                      key={tr.value}
                       type="button"
-                      onClick={() => toggleTrigger(t.value)}
+                      onClick={() => toggleTrigger(tr.value)}
                       className={`px-3 py-1.5 rounded-lg border text-sm transition-all ${
-                        triggers.includes(t.value)
+                        triggers.includes(tr.value)
                           ? "border-orange-400/40 bg-orange-400/10 text-orange-400"
                           : "border-dark-border text-slate-400 hover:border-slate-600"
                       }`}
                     >
-                      {t.label}
+                      {tr.label}
                     </button>
                   ))}
                 </div>
@@ -488,25 +498,25 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
         {/* Mood before */}
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">
-            Настроение {type === "episode" ? "ДО игры" : "сейчас"}
+            {type === "episode" ? t("moodBeforeGame") : t("moodBeforeNow")}
           </label>
-          <MoodPicker value={moodBefore} onChange={setMoodBefore} />
+          <MoodPicker value={moodBefore} onChange={setMoodBefore} MOODS={MOODS} />
         </div>
 
         {/* Mood after (only for episodes) */}
         {type === "episode" && (
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Настроение ПОСЛЕ игры
+              {t("moodAfterGame")}
             </label>
-            <MoodPicker value={moodAfter} onChange={setMoodAfter} />
+            <MoodPicker value={moodAfter} onChange={setMoodAfter} MOODS={MOODS} />
           </div>
         )}
 
         {/* Notes */}
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-1.5">
-            Что происходило?
+            {t("whatHappened")}
           </label>
           <textarea
             value={notes}
@@ -514,7 +524,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
             maxLength={500}
             rows={3}
             className="w-full px-4 py-2.5 bg-dark-lighter border border-dark-border rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 resize-none transition-colors"
-            placeholder="Опишите ситуацию, мысли, чувства..."
+            placeholder={t("describePlaceholder")}
           />
           <p className="text-xs text-slate-500 mt-1 text-right">
             {notes.length}/500
@@ -528,7 +538,7 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
         )}
 
         <Button type="submit" className="w-full" loading={saving}>
-          Сохранить запись
+          {t("saveEntry")}
         </Button>
       </form>
     </Card>
@@ -540,9 +550,11 @@ function NewEntryForm({ onSuccess }: { onSuccess: () => void }) {
 function MoodPicker({
   value,
   onChange,
+  MOODS,
 }: {
   value: string;
   onChange: (v: string) => void;
+  MOODS: { value: string; label: string }[];
 }) {
   return (
     <div className="flex gap-2">
@@ -557,7 +569,7 @@ function MoodPicker({
               : "border-dark-border hover:border-slate-600"
           }`}
         >
-          <span className="text-2xl"><MoodIcon value={m.value} className="w-8 h-8" /></span>
+          <span className="text-2xl"><MoodIcon value={m.value} className="w-8 h-8" label={m.label} /></span>
           <span className="text-xs text-slate-400">{m.label}</span>
         </button>
       ))}
@@ -567,7 +579,15 @@ function MoodPicker({
 
 // ── Entry Card ──
 
-function EntryCard({ entry }: { entry: DiaryEntry }) {
+interface EntryCardProps {
+  entry: DiaryEntry;
+  MOODS: { value: string; label: string }[];
+  TRIGGERS: { value: string; label: string }[];
+  PLATFORM_LABEL: Record<string, string>;
+  t: (k: string) => string;
+}
+
+function EntryCard({ entry, MOODS, TRIGGERS, PLATFORM_LABEL, t }: EntryCardProps) {
   const isEpisode = entry.type === "episode";
 
   return (
@@ -594,7 +614,7 @@ function EntryCard({ entry }: { entry: DiaryEntry }) {
                 isEpisode ? "text-red-400" : "text-accent"
               }`}
             >
-              {isEpisode ? "Игровой эпизод" : "Позитивный день"}
+              {isEpisode ? t("episodeEntry") : t("positiveDay")}
             </span>
             <span className="text-xs text-slate-500">
               {formatDate(entry.date)}
@@ -611,7 +631,7 @@ function EntryCard({ entry }: { entry: DiaryEntry }) {
               )}
               {entry.duration && (
                 <span className="text-slate-400">
-                  {entry.duration} мин
+                  {entry.duration} {t("minutes")}
                 </span>
               )}
               {entry.platform && (
@@ -625,11 +645,11 @@ function EntryCard({ entry }: { entry: DiaryEntry }) {
           {/* Mood before → after */}
           {entry.mood_before && (
             <div className="flex items-center gap-2 mb-2">
-              <MoodIcon value={entry.mood_before} className="w-6 h-6" />
+              <MoodIcon value={entry.mood_before} className="w-6 h-6" label={MOODS.find((m) => m.value === entry.mood_before)?.label} />
               {isEpisode && entry.mood_after && (
                 <>
                   <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                  <MoodIcon value={entry.mood_after} className="w-6 h-6" />
+                  <MoodIcon value={entry.mood_after} className="w-6 h-6" label={MOODS.find((m) => m.value === entry.mood_after)?.label} />
                 </>
               )}
             </div>
@@ -638,12 +658,12 @@ function EntryCard({ entry }: { entry: DiaryEntry }) {
           {/* Triggers */}
           {entry.triggers && entry.triggers.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
-              {entry.triggers.map((t) => (
+              {entry.triggers.map((tr) => (
                 <span
-                  key={t}
+                  key={tr}
                   className="text-xs px-2 py-0.5 rounded bg-dark-lighter text-slate-400 border border-dark-border"
                 >
-                  {TRIGGERS.find((tr) => tr.value === t)?.label || t}
+                  {TRIGGERS.find((x) => x.value === tr)?.label || tr}
                 </span>
               ))}
             </div>

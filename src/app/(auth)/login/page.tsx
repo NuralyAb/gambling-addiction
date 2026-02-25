@@ -4,11 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Card from "@/components/ui/Card";
 
 export default function LoginPage() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +38,7 @@ export default function LoginPage() {
       router.push(check.admin ? "/admin" : "/dashboard");
       router.refresh();
     } catch {
-      setError("Ошибка соединения с сервером");
+      setError(t("connectionError"));
     } finally {
       setLoading(false);
     }
@@ -46,16 +48,16 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8">
       <Card className="max-w-md w-full">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-white mb-2">Вход в аккаунт</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">{t("loginTitle")}</h1>
           <p className="text-slate-400 text-sm">
-            Рады видеть вас снова
+            {t("loginSubtitle")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="email"
-            label="Email"
+            label={t("email")}
             type="email"
             placeholder="your@email.com"
             value={email}
@@ -64,9 +66,9 @@ export default function LoginPage() {
           />
           <Input
             id="password"
-            label="Пароль"
+            label={t("password")}
             type="password"
-            placeholder="Ваш пароль"
+            placeholder={t("passwordPlaceholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -74,7 +76,7 @@ export default function LoginPage() {
 
           <div className="text-right">
             <Link href="/reset-password" className="text-sm text-accent hover:underline">
-              Забыли пароль?
+              {t("forgotPassword")}
             </Link>
           </div>
 
@@ -85,14 +87,14 @@ export default function LoginPage() {
           )}
 
           <Button type="submit" className="w-full" loading={loading}>
-            Войти
+            {t("signIn")}
           </Button>
         </form>
 
         <p className="text-center text-sm text-slate-500 mt-6">
-          Нет аккаунта?{" "}
+          {t("noAccount")}{" "}
           <Link href="/register" className="text-accent hover:underline">
-            Зарегистрироваться
+            {t("signUp")}
           </Link>
         </p>
       </Card>

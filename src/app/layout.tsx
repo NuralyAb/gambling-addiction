@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
+import { getLocale, getMessages } from "next-intl/server";
 import Providers from "@/components/Providers";
 import "./globals.css";
 
@@ -19,15 +20,17 @@ export const metadata: Metadata = {
     "Бесплатная платформа для людей, борющихся с игровой зависимостью. Анализ поведения, персональные рекомендации, поддержка 24/7.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="ru" className="dark">
+    <html lang={locale} className="dark">
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-dark text-slate-200 min-h-screen flex flex-col overflow-x-hidden`}>
-        <Providers>{children}</Providers>
+        <Providers messages={messages}>{children}</Providers>
       </body>
     </html>
   );

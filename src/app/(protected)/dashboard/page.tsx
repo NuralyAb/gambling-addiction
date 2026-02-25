@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -99,13 +100,13 @@ interface DashboardData {
   }>;
 }
 
-function getRiskColor(category: string) {
+function getRiskColor(category: string, t: (k: string) => string) {
   switch (category) {
-    case "none": return { text: "text-emerald-400", bg: "bg-emerald-400", label: "Нет проблемы" };
-    case "low": return { text: "text-amber-400", bg: "bg-amber-400", label: "Низкий" };
-    case "moderate": return { text: "text-orange-400", bg: "bg-orange-400", label: "Умеренный" };
-    case "high": return { text: "text-red-400", bg: "bg-red-400", label: "Высокий" };
-    default: return { text: "text-slate-400", bg: "bg-slate-400", label: "Не определён" };
+    case "none": return { text: "text-emerald-400", bg: "bg-emerald-400", label: t("riskNone") };
+    case "low": return { text: "text-amber-400", bg: "bg-amber-400", label: t("riskLow") };
+    case "moderate": return { text: "text-orange-400", bg: "bg-orange-400", label: t("riskModerate") };
+    case "high": return { text: "text-red-400", bg: "bg-red-400", label: t("riskHigh") };
+    default: return { text: "text-slate-400", bg: "bg-slate-400", label: t("riskUndefined") };
   }
 }
 
@@ -168,6 +169,8 @@ const fadeUp = {
 };
 
 export default function DashboardPage() {
+  const t = useTranslations("dashboard");
+  const tCommon = useTranslations("common");
   const [data, setData] = useState<DashboardData | null>(null);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
@@ -194,16 +197,16 @@ export default function DashboardPage() {
           <div className="absolute inset-3 rounded-full border-2 border-accent/40 animate-pulse" />
           <div className="absolute inset-5 rounded-full bg-accent/10 animate-pulse" />
         </div>
-        <p className="text-sm text-slate-500 animate-pulse">Загрузка данных...</p>
+        <p className="text-sm text-slate-500 animate-pulse">{t("loading")}</p>
       </div>
     );
   }
 
   if (!data) {
-    return <p className="text-slate-400 text-center py-16">Ошибка загрузки данных</p>;
+    return <p className="text-slate-400 text-center py-16">{t("loadError")}</p>;
   }
 
-  const risk = data.pgsi ? getRiskColor(data.pgsi.risk_category) : null;
+  const risk = data.pgsi ? getRiskColor(data.pgsi.risk_category, t) : null;
   const { weeklyStats, streak, recentDiary } = data;
 
   return (
@@ -212,9 +215,9 @@ export default function DashboardPage() {
       {/* Header */}
       <motion.div variants={fadeUp} custom={0}>
         <h1 className="text-2xl font-bold text-white">
-          {data.user.name ? `Привет, ${data.user.name}!` : "Добро пожаловать!"}
+          {data.user.name ? t("greeting", { name: data.user.name }) : t("welcome")}
         </h1>
-        <p className="text-slate-400 mt-1">Ваша персональная панель мониторинга</p>
+        <p className="text-slate-400 mt-1">{t("panelSubtitle")}</p>
       </motion.div>
 
       {/* Quote */}
@@ -237,7 +240,7 @@ export default function DashboardPage() {
         <motion.div variants={fadeUp} custom={2}>
           <Card className="h-full">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-slate-400">Уровень риска</span>
+              <span className="text-sm text-slate-400">{t("riskLevel")}</span>
               {data.pgsi && (
                 <span className={`text-xs px-2 py-0.5 rounded-full ${risk!.text} bg-dark-lighter`}>
                   PGSI: {data.pgsi.total_score}/27
@@ -256,14 +259,14 @@ export default function DashboardPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between mt-3">
-                  <span className="text-xs text-slate-500">Тест от {formatDate(data.pgsi.created_at)}</span>
-                  <Link href="/pgsi-test" className="text-xs text-accent hover:underline">Пройти заново</Link>
+                  <span className="text-xs text-slate-500">{t("testFrom")} {formatDate(data.pgsi.created_at)}</span>
+                  <Link href="/pgsi-test" className="text-xs text-accent hover:underline">{t("retakeTest")}</Link>
                 </div>
               </>
             ) : (
               <div className="text-slate-500">
-                <p className="mb-3">Тест не пройден</p>
-                <Link href="/pgsi-test"><Button size="sm">Пройти тест</Button></Link>
+                <p className="mb-3">{t("testNotPassed")}</p>
+                <Link href="/pgsi-test"><Button size="sm">{t("takeTest")}</Button></Link>
               </div>
             )}
           </Card>
@@ -272,22 +275,22 @@ export default function DashboardPage() {
         {/* Weekly stats */}
         <motion.div variants={fadeUp} custom={3}>
           <Card className="h-full">
-            <div className="text-sm text-slate-400 mb-3">Статистика недели</div>
+            <div className="text-sm text-slate-400 mb-3">{t("weeklyStats")}</div>
             <div className="space-y-4">
               <div>
                 <div className="flex items-end gap-2">
                   <span className="text-2xl font-bold text-white">{weeklyStats.episodeCount}</span>
                   <span className="text-sm text-slate-500 mb-0.5">
-                    {weeklyStats.episodeCount === 1 ? "эпизод" : weeklyStats.episodeCount > 1 && weeklyStats.episodeCount < 5 ? "эпизода" : "эпизодов"}
+                    {weeklyStats.episodeCount === 1 ? t("episode1") : weeklyStats.episodeCount > 1 && weeklyStats.episodeCount < 5 ? t("episode2to4") : t("episode5plus")}
                   </span>
                 </div>
-                <DeltaIndicator value={weeklyStats.countDelta} inverse />
+                <DeltaIndicator value={weeklyStats.countDelta} inverse t={t} />
               </div>
               <div>
                 <div className="flex items-end gap-2">
                   <span className="text-xl font-bold text-white">{formatMoney(weeklyStats.totalAmount)}</span>
                 </div>
-                <DeltaIndicator value={weeklyStats.amountDelta} inverse isMoney />
+                <DeltaIndicator value={weeklyStats.amountDelta} inverse isMoney t={t} />
               </div>
             </div>
           </Card>
@@ -298,14 +301,14 @@ export default function DashboardPage() {
           <Card className="h-full relative overflow-hidden">
             <div className="absolute -top-16 -right-16 w-40 h-40 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
             <div className="relative">
-              <div className="text-sm text-slate-400 mb-3">Серия воздержания</div>
+              <div className="text-sm text-slate-400 mb-3">{t("streak")}</div>
               <div className="flex items-center gap-3">
                 <div className="text-4xl font-bold text-white tabular-nums">{streak}</div>
                 <div>
                   <div className="text-sm text-slate-400">
-                    {streak === 1 ? "день" : streak > 1 && streak < 5 ? "дня" : "дней"}
+                    {streak === 1 ? t("day1") : streak > 1 && streak < 5 ? t("day2to4") : t("day5plus")}
                   </div>
-                  <div className="text-xs text-slate-500">без игры</div>
+                  <div className="text-xs text-slate-500">{t("noGame")}</div>
                 </div>
               </div>
 
@@ -340,7 +343,7 @@ export default function DashboardPage() {
                 </div>
               )}
               {streak === 0 && (
-                <p className="text-xs text-slate-500 mt-3">Зафиксируйте эпизод, чтобы начать отсчёт</p>
+                <p className="text-xs text-slate-500 mt-3">{t("startTracking")}</p>
               )}
             </div>
           </Card>
@@ -358,8 +361,8 @@ export default function DashboardPage() {
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="text-lg font-semibold text-white">Мне нужна помощь</div>
-                <div className="text-sm text-slate-400">Дыхание, таймер, заземление — справиться с желанием</div>
+                <div className="text-lg font-semibold text-white">{t("needHelp")}</div>
+                <div className="text-sm text-slate-400">{t("helpSubtitle")}</div>
               </div>
               <svg className="w-5 h-5 text-slate-500 shrink-0 group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -379,9 +382,9 @@ export default function DashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold text-white">AI-анализ</h2>
+              <h2 className="text-lg font-semibold text-white">{t("aiAnalysis")}</h2>
             </div>
-            <Link href="/progress" className="text-xs text-accent hover:underline">Подробнее</Link>
+            <Link href="/progress" className="text-xs text-accent hover:underline">{t("more")}</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -423,13 +426,13 @@ export default function DashboardPage() {
                         nn.riskLevel === "HIGH" ? "text-red-400 bg-red-500/10" :
                         nn.riskLevel === "MEDIUM" ? "text-amber-400 bg-amber-500/10" :
                         "text-emerald-400 bg-emerald-500/10"
-                      }`}>{nn.riskLevel === "HIGH" ? "Высокий" : nn.riskLevel === "MEDIUM" ? "Умеренный" : "Низкий"}</span>
+                      }`}>{nn.riskLevel === "HIGH" ? t("riskHigh") : nn.riskLevel === "MEDIUM" ? t("riskModerate") : t("riskLow")}</span>
                       <span className="text-[10px] text-slate-500">{Math.round(nn.confidence * 100)}%</span>
                     </div>
                   </>
                 );
               })() : (
-                <div className="text-slate-500 text-xs animate-pulse">Загрузка...</div>
+                <div className="text-slate-500 text-xs animate-pulse">{tCommon("loading")}</div>
               )}
             </div>
 
@@ -449,9 +452,9 @@ export default function DashboardPage() {
                 if (s.entryCount === 0) {
                   return (
                     <div className="text-center py-1">
-                      <p className="text-[11px] text-slate-500 mb-1.5">Нет текстовых записей</p>
+                      <p className="text-[11px] text-slate-500 mb-1.5">{t("noTextEntries")}</p>
                       <Link href="/diary" className="text-[10px] text-accent hover:underline">
-                        Добавить запись
+                        {t("addEntry")}
                       </Link>
                     </div>
                   );
@@ -471,9 +474,9 @@ export default function DashboardPage() {
                       </svg>
                       <div>
                         <p className={`text-sm font-medium ${trendColor}`}>
-                          {s.trend === "improving" ? "Улучшается" : s.trend === "declining" ? "Ухудшается" : "Стабильно"}
+                          {s.trend === "improving" ? t("improving") : s.trend === "declining" ? t("declining") : t("stable")}
                         </p>
-                        <p className="text-[10px] text-slate-500">{s.entryCount} записей</p>
+                        <p className="text-[10px] text-slate-500">{s.entryCount} {t("entries")}</p>
                       </div>
                     </div>
                     {s.warningSignals.length > 0 ? (
@@ -490,14 +493,14 @@ export default function DashboardPage() {
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
-                        Фон стабильный
+                        {t("baselineStable")}
                       </div>
                     )}
                   </>
                 );
               })() : (
                 <div className="text-center py-1">
-                  <p className="text-[11px] text-slate-500 animate-pulse">Загрузка...</p>
+                  <p className="text-[11px] text-slate-500 animate-pulse">{tCommon("loading")}</p>
                 </div>
               )}
             </div>
@@ -521,11 +524,11 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-3 mb-2">
                       <div>
                         <p className={`text-lg font-bold ${rColor}`}>{a.totalAnomalies}</p>
-                        <p className="text-[10px] text-slate-500">аномалий</p>
+                        <p className="text-[10px] text-slate-500">{t("anomalies")}</p>
                       </div>
                       {a.criticalCount > 0 && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded text-red-400 bg-red-500/10">
-                          {a.criticalCount} крит.
+                          {a.criticalCount} {t("crit")}
                         </span>
                       )}
                     </div>
@@ -543,7 +546,7 @@ export default function DashboardPage() {
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
-                        Аномалий нет
+                        {t("noAnomalies")}
                       </div>
                     )}
                   </>
@@ -553,7 +556,7 @@ export default function DashboardPage() {
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Аномалий нет
+                  {t("noAnomalies")}
                 </div>
               )}
             </div>
@@ -563,18 +566,18 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3 text-[10px] text-slate-500">
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                ML модель
+                {t("mlModel")}
               </span>
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                NLP
+                {t("nlp")}
               </span>
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                Аномалии
+                {t("anomalyDetector")}
               </span>
             </div>
-            <span className="text-[10px] text-slate-600">3 независимых AI-модуля</span>
+            <span className="text-[10px] text-slate-600">{t("threeModules")}</span>
           </div>
         </Card>
       </motion.div>
@@ -583,14 +586,14 @@ export default function DashboardPage() {
       <motion.div variants={fadeUp} custom={7}>
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Последние записи</h2>
-            <Link href="/diary" className="text-sm text-accent hover:underline">Все записи</Link>
+            <h2 className="text-lg font-semibold text-white">{t("recent")}</h2>
+            <Link href="/diary" className="text-sm text-accent hover:underline">{t("allEntries")}</Link>
           </div>
 
           {recentDiary.length === 0 ? (
             <div className="text-center py-6">
-              <p className="text-slate-500 mb-3">Пока нет записей</p>
-              <Link href="/diary"><Button size="sm" variant="secondary">Написать первую запись</Button></Link>
+              <p className="text-slate-500 mb-3">{t("noEntriesYet")}</p>
+              <Link href="/diary"><Button size="sm" variant="secondary">{t("writeFirst")}</Button></Link>
             </div>
           ) : (
             <div className="space-y-2">
@@ -614,7 +617,7 @@ export default function DashboardPage() {
                       <span className={`text-xs font-medium ${
                         entry.type === "episode" ? "text-red-400" : "text-accent"
                       }`}>
-                        {entry.type === "episode" ? "Эпизод" : "Позитивный день"}
+                        {entry.type === "episode" ? t("episode") : t("positiveDay")}
                       </span>
                       {entry.mood_before && (
                         <span className="flex items-center gap-1">
@@ -648,9 +651,9 @@ export default function DashboardPage() {
   );
 }
 
-function DeltaIndicator({ value, inverse = false, isMoney = false }: { value: number; inverse?: boolean; isMoney?: boolean }) {
+function DeltaIndicator({ value, inverse = false, isMoney = false, t }: { value: number; inverse?: boolean; isMoney?: boolean; t: (k: string) => string }) {
   if (value === 0) {
-    return <span className="text-xs text-slate-500">Без изменений</span>;
+    return <span className="text-xs text-slate-500">{t("noChange")}</span>;
   }
   const isPositiveChange = inverse ? value < 0 : value > 0;
   return (
@@ -658,7 +661,7 @@ function DeltaIndicator({ value, inverse = false, isMoney = false }: { value: nu
       <svg className={`w-3 h-3 ${value < 0 ? "" : "rotate-180"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
       </svg>
-      {isMoney ? formatMoney(Math.abs(value)) : Math.abs(value)} vs пред. нед.
+      {isMoney ? formatMoney(Math.abs(value)) : Math.abs(value)} {t("vsPrevWeek")}
     </span>
   );
 }

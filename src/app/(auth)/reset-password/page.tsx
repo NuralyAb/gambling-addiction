@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Card from "@/components/ui/Card";
@@ -19,6 +20,7 @@ function ResetPasswordContent() {
 }
 
 function RequestResetForm() {
+  const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -51,12 +53,12 @@ function RequestResetForm() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Проверьте почту</h2>
+          <h2 className="text-xl font-bold text-white mb-2">{t("checkEmail")}</h2>
           <p className="text-slate-400 mb-6">
-            Если аккаунт с таким email существует, мы отправили ссылку для сброса пароля.
+            {t("resetEmailSent")}
           </p>
           <Link href="/login">
-            <Button variant="secondary" className="w-full">Вернуться к входу</Button>
+            <Button variant="secondary" className="w-full">{t("backToLogin")}</Button>
           </Link>
         </Card>
       </div>
@@ -67,16 +69,16 @@ function RequestResetForm() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <Card className="max-w-md w-full">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-white mb-2">Сброс пароля</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">{t("resetPassword")}</h1>
           <p className="text-slate-400 text-sm">
-            Введите email, на который зарегистрирован аккаунт
+            {t("enterEmailForReset")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="email"
-            label="Email"
+            label={t("email")}
             type="email"
             placeholder="your@email.com"
             value={email}
@@ -84,13 +86,13 @@ function RequestResetForm() {
             required
           />
           <Button type="submit" className="w-full" loading={loading}>
-            Отправить ссылку
+            {t("sendLink")}
           </Button>
         </form>
 
         <p className="text-center text-sm text-slate-500 mt-6">
           <Link href="/login" className="text-accent hover:underline">
-            Вернуться к входу
+            {t("backToLogin")}
           </Link>
         </p>
       </Card>
@@ -99,6 +101,7 @@ function RequestResetForm() {
 }
 
 function NewPasswordForm({ token }: { token: string }) {
+  const t = useTranslations("auth");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -110,12 +113,12 @@ function NewPasswordForm({ token }: { token: string }) {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Пароли не совпадают");
+      setError(t("passwordsMismatch"));
       return;
     }
 
     if (password.length < 8) {
-      setError("Пароль минимум 8 символов");
+      setError(t("passwordMinLength"));
       return;
     }
 
@@ -137,7 +140,7 @@ function NewPasswordForm({ token }: { token: string }) {
 
       setSuccess(true);
     } catch {
-      setError("Ошибка соединения с сервером");
+      setError(t("connectionError"));
     } finally {
       setLoading(false);
     }
@@ -152,10 +155,10 @@ function NewPasswordForm({ token }: { token: string }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Пароль изменён!</h2>
-          <p className="text-slate-400 mb-6">Теперь вы можете войти с новым паролем.</p>
+          <h2 className="text-xl font-bold text-white mb-2">{t("passwordChanged")}</h2>
+          <p className="text-slate-400 mb-6">{t("loginWithNewPassword")}</p>
           <Link href="/login">
-            <Button className="w-full">Войти</Button>
+            <Button className="w-full">{t("loginToAccount")}</Button>
           </Link>
         </Card>
       </div>
@@ -166,25 +169,25 @@ function NewPasswordForm({ token }: { token: string }) {
     <div className="min-h-screen flex items-center justify-center px-4">
       <Card className="max-w-md w-full">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-white mb-2">Новый пароль</h1>
-          <p className="text-slate-400 text-sm">Придумайте новый пароль для аккаунта</p>
+          <h1 className="text-2xl font-bold text-white mb-2">{t("newPassword")}</h1>
+          <p className="text-slate-400 text-sm">{t("newPasswordSubtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="password"
-            label="Новый пароль"
+            label={t("newPassword")}
             type="password"
-            placeholder="Минимум 8 символов"
+            placeholder={t("passwordPlaceholderMin")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           <Input
             id="confirmPassword"
-            label="Подтвердите пароль"
+            label={t("confirmPassword")}
             type="password"
-            placeholder="Повторите пароль"
+            placeholder={t("repeatPassword")}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -197,7 +200,7 @@ function NewPasswordForm({ token }: { token: string }) {
           )}
 
           <Button type="submit" className="w-full" loading={loading}>
-            Сохранить пароль
+            {t("savePassword")}
           </Button>
         </form>
       </Card>

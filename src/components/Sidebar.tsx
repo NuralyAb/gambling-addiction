@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
-const NAV_ITEMS = [
+function useNavItems() {
+  const t = useTranslations("common");
+  return [
   {
-    label: "Главная",
+    label: t("home"),
     href: "/dashboard",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +18,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Дневник",
+    label: t("diary"),
     href: "/diary",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,7 +27,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Мой прогресс",
+    label: t("myProgress"),
     href: "/progress",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +36,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Достижения",
+    label: t("achievements"),
     href: "/achievements",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +45,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Обучение",
+    label: t("education"),
     href: "/education",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +54,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Помощь",
+    label: t("help"),
     href: "/help",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +63,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Расширение",
+    label: t("extension"),
     href: "/extension",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +72,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    label: "Настройки",
+    label: t("settings"),
     href: "/profile",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,9 +82,12 @@ const NAV_ITEMS = [
     ),
   },
 ];
+}
 
-const ADMIN_ITEM = {
-  label: "Админ",
+function useAdminItem() {
+  const t = useTranslations("common");
+  return {
+  label: t("admin"),
   href: "/admin",
   icon: (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,10 +96,13 @@ const ADMIN_ITEM = {
     </svg>
   ),
 };
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState(false);
+  const navItems = useNavItems();
+  const adminItem = useAdminItem();
 
   useEffect(() => {
     fetch("/api/admin/check")
@@ -102,12 +111,12 @@ export default function Sidebar() {
       .catch(() => {});
   }, []);
 
-  const navItems = [...NAV_ITEMS, ...(isAdmin ? [ADMIN_ITEM] : [])];
+  const items = [...navItems, ...(isAdmin ? [adminItem] : [])];
 
   return (
     <aside className="hidden lg:flex flex-col w-56 shrink-0">
       <nav className="space-y-1 sticky top-24">
-        {navItems.map((item) => {
+        {items.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
@@ -132,6 +141,8 @@ export default function Sidebar() {
 export function MobileNav() {
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState(false);
+  const navItems = useNavItems();
+  const adminItem = useAdminItem();
 
   useEffect(() => {
     fetch("/api/admin/check")
@@ -140,11 +151,11 @@ export function MobileNav() {
       .catch(() => {});
   }, []);
 
-  const navItems = [...NAV_ITEMS, ...(isAdmin ? [ADMIN_ITEM] : [])];
+  const items = [...navItems, ...(isAdmin ? [adminItem] : [])];
 
   return (
     <div className="lg:hidden flex overflow-x-auto gap-2 pb-4 -mx-4 sm:-mx-6 px-4 sm:px-6 scrollbar-hide snap-x snap-mandatory">
-      {navItems.map((item) => {
+      {items.map((item) => {
         const isActive = pathname === item.href;
         return (
           <Link
