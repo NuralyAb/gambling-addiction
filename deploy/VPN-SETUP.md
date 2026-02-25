@@ -115,7 +115,10 @@ sudo ufw status
 1. Откройте в браузере: **https://nobet.kz/adguard/**  
    (или `http://ваш-сервер:5181`)
 
-2. **Пароль** (если задали WEBPASSWORD в compose) — введите при первом входе.
+2. **Пароль:** в compose задано `WEBPASSWORD: ""` (пустой) — вход без пароля. Чтобы задать пароль:
+   - В compose: `WEBPASSWORD: "ваш_пароль"` (для Pi-hole v5) или `FTLCONF_webserver_api_password: "ваш_пароль"` (v6)
+   - Или в контейнере: `docker exec -it nobet-pihole pihole setpassword`
+   - Если пароль не задан — Pi-hole генерирует случайный, смотрите: `docker logs nobet-pihole 2>&1 | grep -i password`
 
 3. **Добавить блоклист букмекеров:**
    - **Group management** → **Adlists** → **Add a new adlist**
