@@ -52,12 +52,6 @@ services:
     ports:
       - "5181:3000"
 
-  # Подключить nginx к сети VPN, чтобы проксировать /adguard/
-  nginx:
-    networks:
-      - nobet
-      - nobet-vpn
-
 networks:
   nobet-vpn:
     driver: bridge
