@@ -48,7 +48,7 @@ services:
     networks:
       nobet-vpn:
         ipv4_address: 10.2.0.100
-    # Web UI для настройки — порт 5181 (не конфликтует с nginx:80)
+    # Web UI — порт 5181 (не конфликтует с nginx:80)
     ports:
       - "5181:3000"
 
