@@ -58,3 +58,6 @@ env/
 *.pem
 *.log
 .cache/
+
+# mobile / JDK
+mobile/microsoft-jdk-*.zip
