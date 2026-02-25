@@ -25,7 +25,7 @@ export default function LanguageSwitcher() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      <div className="absolute right-0 top-full mt-1 py-1 bg-dark-lighter border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-[120px]">
+      <div className="absolute right-0 top-full mt-1 py-1 bg-dark-lighter border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[100] min-w-[120px]">
         {locales.map((l) => (
           <button
             key={l}

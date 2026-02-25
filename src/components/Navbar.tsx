@@ -12,7 +12,7 @@ export default function Navbar() {
 
   return (
     <nav className="border-b border-white/10 bg-dark/70 backdrop-blur-xl sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 min-w-0 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 min-w-0">
         <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0">
           <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center shrink-0 shadow-glow-sm">
             <svg className="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">

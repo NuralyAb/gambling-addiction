@@ -30,7 +30,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className="dark">
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-dark text-slate-200 min-h-screen flex flex-col overflow-x-hidden`}>
-        <Providers messages={messages}>{children}</Providers>
+        <Providers locale={locale} messages={messages}>{children}</Providers>
       </body>
     </html>
   );
