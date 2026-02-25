@@ -4,7 +4,7 @@ const resendApiKey = process.env.RESEND_API_KEY
 const resend = resendApiKey ? new Resend(resendApiKey) : null
 
 const emailFrom = process.env.EMAIL_FROM || 'noreply@yourdomain.com'
-const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+const baseUrl = process.env.NEXTAUTH_URL || 'https://nobet.kz'
 
 export async function sendVerificationEmail(email: string, token: string) {
   if (!resend) {

@@ -101,6 +101,27 @@ curl -I https://nobet.kz
 docker compose -f deploy/docker-compose.prod-http.yml --env-file .env up -d --build
 ```
 
+### 5.4 Переход с IP на домен (nobet.kz)
+
+Если сейчас работает по `http://IP`:
+
+```bash
+# 1. Убедитесь, что DNS: nobet.kz и www.nobet.kz → IP сервера
+dig nobet.kz +short
+
+# 2. Остановите HTTP-версию
+docker compose -f deploy/docker-compose.prod-http.yml down
+
+# 3. Получите SSL
+sudo bash deploy/ssl-setup.sh nobet.kz admin@nobet.kz
+
+# 4. Обновите .env
+# NEXTAUTH_URL=https://nobet.kz
+
+# 5. Запустите с HTTPS
+docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d --build
+```
+
 ---
 
 ## 6. Полезные команды

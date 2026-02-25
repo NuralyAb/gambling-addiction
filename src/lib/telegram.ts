@@ -102,7 +102,7 @@ export function getFrequencyKeyboard(currentFreq: string) {
 }
 
 export function getAppUrl(): string {
-  return process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  return process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://nobet.kz";
 }
 
 export interface WeeklyReportData {
