@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTimeZone } from "next-intl/server";
 import Providers from "@/components/Providers";
 import "./globals.css";
 
@@ -27,10 +27,11 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const timeZone = await getTimeZone();
   return (
     <html lang={locale} className="dark">
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-dark text-slate-200 min-h-screen flex flex-col overflow-x-hidden`}>
-        <Providers locale={locale} messages={messages}>{children}</Providers>
+        <Providers locale={locale} messages={messages} timeZone={timeZone}>{children}</Providers>
       </body>
     </html>
   );
