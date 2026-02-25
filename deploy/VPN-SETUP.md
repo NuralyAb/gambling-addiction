@@ -142,21 +142,22 @@ sudo ufw status
 
 ---
 
-## Шаг 7: Получить конфиги WireGuard
+## Шаг 7: Получить конфиги WireGuard и включить скачивание с сайта
 
 ```bash
-# Показать QR-коды для peer 1, 2, 3:
-docker exec -it nobet-wireguard /app/show-peer 1 2 3
+# Скопировать конфиги в vpn-config/ (для скачивания с /vpn):
+bash deploy/copy-vpn-config.sh
+
+# Права доступа (если 500 при скачивании):
+chmod -R 755 vpn-config
 ```
 
-Скопируйте QR-код или конфиг:
+Скрипт копирует peer1.conf, peer2.conf, peer3.conf из контейнера WireGuard.
+
+Показать QR-коды вручную:
 
 ```bash
-# Скопировать конфиг peer1 на сервер:
-docker cp nobet-wireguard:/config/peer1/peer1.conf ./
-
-# Скопировать с сервера на свой компьютер:
-scp user@nobet.kz:~/gambling-addiction/peer1.conf ./
+docker exec -it nobet-wireguard /app/show-peer 1 2 3
 ```
 
 ---
@@ -265,6 +266,22 @@ docker exec -it nobet-wireguard /app/show-peer 4 5
 6. **Браузер использует свой DNS (DoH)** — Chrome/Firefox могут обходить системный DNS:
    - **Chrome (Android):** Settings → Privacy and security → Use secure DNS → отключить или выбрать «Use current service provider»
    - **Safari (iOS):** обычно использует системный DNS — проверьте, что VPN включён до открытия браузера
+
+### 500 при скачивании конфига с /vpn
+
+1. **Запустите WireGuard** и скопируйте конфиги:
+   ```bash
+   docker compose -f deploy/docker-compose.vpn.yml --env-file .env up -d
+   bash deploy/copy-vpn-config.sh
+   chmod -R 755 vpn-config
+   ```
+
+2. **Перезапустите приложение**, чтобы подхватить volume:
+   ```bash
+   docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d --force-recreate app
+   ```
+
+3. **Проверьте**, что файлы есть: `ls -la vpn-config/`
 
 ### NoBet перестал работать после запуска VPN
 - VPN не должен влиять на NoBet. Проверьте: `docker ps`

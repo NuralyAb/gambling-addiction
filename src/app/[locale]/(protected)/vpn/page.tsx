@@ -18,6 +18,7 @@ export default function VpnPage() {
   const t = useTranslations("vpn");
   const [configAvailable, setConfigAvailable] = useState<boolean | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const [deviceTab, setDeviceTab] = useState<DeviceTab>("ios");
 
   useEffect(() => {
@@ -28,11 +29,12 @@ export default function VpnPage() {
 
   const handleDownload = async () => {
     setDownloading(true);
+    setDownloadError(null);
     try {
       const res = await fetch("/api/vpn/config");
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Download failed");
+        throw new Error(data.hint || data.error || "Download failed");
       }
       const blob = await res.blob();
       const filename = res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] || "nobet-vpn.conf";
@@ -45,6 +47,7 @@ export default function VpnPage() {
     } catch (err) {
       console.error(err);
       setConfigAvailable(false);
+      setDownloadError(err instanceof Error ? err.message : "Download failed");
     } finally {
       setDownloading(false);
     }
@@ -108,7 +111,9 @@ export default function VpnPage() {
           ) : (
             <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
               <p className="text-amber-400 font-medium text-sm">{t("notAvailable")}</p>
-              <p className="text-slate-500 text-xs mt-1">{t("notAvailableHint")}</p>
+              <p className="text-slate-500 text-xs mt-1">
+                {downloadError || t("notAvailableHint")}
+              </p>
             </div>
           )}
         </div>

@@ -22,6 +22,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - VPN_CONFIG_DIR=/app/vpn-config
     volumes:
       - ../vpn-config:/app/vpn-config:ro
     expose:

@@ -13,5 +13,8 @@ for i in 1 2 3; do
   fi
 done
 
+# Права для чтения контейнером app (nextjs user)
+chmod -R 755 vpn-config 2>/dev/null || true
+
 echo "VPN configs copied to vpn-config/"
 ls -la vpn-config/ 2>/dev/null || echo "No configs found (is WireGuard running?)"

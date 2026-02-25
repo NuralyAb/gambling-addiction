@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { authOptions } from "@/lib/auth";
 
+// В Docker: /app/vpn-config (volume mount). Локально: ./vpn-config
 const CONFIG_DIR = process.env.VPN_CONFIG_DIR || path.join(process.cwd(), "vpn-config");
 const CONFIG_FILES = ["peer1.conf", "peer2.conf", "peer3.conf"];
 
@@ -61,7 +62,18 @@ export async function GET() {
       },
     });
   } catch (err) {
-    console.error("VPN config error:", err);
-    return NextResponse.json({ error: "Download failed" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Unknown error";
+    const code = err instanceof Error && "code" in err ? (err as NodeJS.ErrnoException).code : "";
+    console.error("VPN config error:", message, code, err);
+    return NextResponse.json(
+      {
+        error: "Download failed",
+        hint:
+          code === "EACCES"
+            ? "Permission denied. Run: chmod -R 755 vpn-config"
+            : "Check server logs. Ensure vpn-config exists and run: bash deploy/copy-vpn-config.sh",
+      },
+      { status: 500 }
+    );
   }
 }
