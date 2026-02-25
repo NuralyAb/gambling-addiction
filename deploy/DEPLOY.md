@@ -140,6 +140,10 @@ docker compose -f deploy/docker-compose.prod.yml down
 docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d --build
 ```
 
+### VPN (опционально)
+
+См. [VPN-SETUP.md](VPN-SETUP.md) — WireGuard + AdGuard для блокировки букмекеров на всех устройствах.
+
 ---
 
 ## 7. Автозапуск при перезагрузке
@@ -155,6 +159,12 @@ sudo ufw allow 22/tcp    # SSH
 sudo ufw allow 80/tcp    # HTTP
 sudo ufw allow 443/tcp   # HTTPS
 sudo ufw enable
+```
+
+Если используете VPN (см. [VPN-SETUP.md](VPN-SETUP.md)):
+```bash
+sudo ufw allow 51820/udp  # WireGuard
+sudo ufw reload
 ```
 
 ---

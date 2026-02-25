@@ -29,3 +29,5 @@ docker compose -f deploy/docker-compose.prod.yml --env-file .env build --no-cach
 docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d
 
 echo "Готово. Проверьте: docker logs -f nobet-app"
+echo ""
+echo "Опционально: для запуска VPN добавьте -f deploy/docker-compose.vpn.yml (см. deploy/VPN-SETUP.md)"

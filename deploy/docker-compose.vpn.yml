@@ -1,0 +1,66 @@
+# ============================================
+# NoBet VPN — WireGuard + AdGuard Home
+# Блокировка сайтов букмекеров на уровне DNS
+# ============================================
+# Запуск вместе с основным проектом:
+#   docker compose -f deploy/docker-compose.prod.yml -f deploy/docker-compose.vpn.yml --env-file .env up -d
+#
+# Или только VPN (если NoBet уже запущен):
+#   docker compose -f deploy/docker-compose.vpn.yml --env-file .env up -d
+# ============================================
+
+services:
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: nobet-wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Almaty
+      - SERVERURL=${NOBET_VPN_SERVER_URL:-}  # IP или домен VPS, напр. nobet.kz или 1.2.3.4
+      - SERVERPORT=51820
+      - PEERS=3
+      - PEERDNS=10.2.0.100
+      - INTERNAL_SUBNET=10.6.0.0
+      - LOG_CONFS=true
+    volumes:
+      - nobet-wireguard-config:/config
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - "51820:51820/udp"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    networks:
+      nobet-vpn:
+        ipv4_address: 10.2.0.3
+
+  adguard:
+    image: adguard/adguardhome:latest
+    container_name: nobet-adguard
+    restart: unless-stopped
+    volumes:
+      - nobet-adguard-work:/opt/adguardhome/work
+      - nobet-adguard-conf:/opt/adguardhome/conf
+    networks:
+      nobet-vpn:
+        ipv4_address: 10.2.0.100
+    # Web UI для настройки — порт 5181 (не конфликтует с nginx:80)
+    ports:
+      - "5181:3000"
+
+networks:
+  nobet-vpn:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.2.0.0/24
+
+volumes:
+  nobet-wireguard-config:
+  nobet-adguard-work:
+  nobet-adguard-conf:

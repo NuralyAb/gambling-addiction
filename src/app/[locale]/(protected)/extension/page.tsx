@@ -198,6 +198,16 @@ export default function ExtensionPage() {
                   отправляет события в вашу систему мониторинга. Каждая попытка 
                   зайти на запрещённый сайт фиксируется и учитывается в профиле риска.
                 </p>
+                <a
+                  href="/api/extension/download"
+                  download="nobet-extension.zip"
+                  className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-accent/20 text-accent font-medium rounded-lg hover:bg-accent/30 transition-colors text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Скачать расширение
+                </a>
               </div>
             </div>
 
@@ -223,17 +233,31 @@ export default function ExtensionPage() {
               <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center text-accent font-bold text-sm">
                 1
               </div>
-              <h3 className="text-white font-semibold">Установите расширение</h3>
+              <h3 className="text-white font-semibold">Скачайте и установите расширение</h3>
             </div>
             <p className="text-sm text-slate-400 mb-4">
-              Загрузите расширение из папки <code className="text-accent bg-accent/10 px-1.5 py-0.5 rounded text-xs">extension/</code> через Chrome в режиме разработчика.
+              Скачайте архив с расширением — в нём уже подставлен адрес этого сайта. Распакуйте и загрузите в Chrome.
             </p>
-            <ol className="text-sm text-slate-400 space-y-2 ml-4 list-decimal">
-              <li>Откройте <code className="text-slate-300 bg-dark/50 px-1.5 py-0.5 rounded text-xs">chrome://extensions</code></li>
-              <li>Включите &quot;Режим разработчика&quot; (правый верхний угол)</li>
-              <li>Нажмите &quot;Загрузить распакованное расширение&quot;</li>
-              <li>Выберите папку <code className="text-slate-300 bg-dark/50 px-1.5 py-0.5 rounded text-xs">extension</code> из проекта</li>
-            </ol>
+            <a
+              href="/api/extension/download"
+              download="nobet-extension.zip"
+              className="inline-flex items-center gap-2 px-5 py-3 bg-accent text-dark font-semibold rounded-xl hover:bg-accent-hover transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Скачать расширение (.zip)
+            </a>
+            <div className="mt-6 pt-4 border-t border-dark-border">
+              <p className="text-sm text-slate-500 mb-2">Как установить:</p>
+              <ol className="text-sm text-slate-400 space-y-2 ml-4 list-decimal">
+                <li>Распакуйте скачанный архив в любую папку</li>
+                <li>Откройте <code className="text-slate-300 bg-dark/50 px-1.5 py-0.5 rounded text-xs">chrome://extensions</code></li>
+                <li>Включите &quot;Режим разработчика&quot; (правый верхний угол)</li>
+                <li>Нажмите &quot;Загрузить распакованное расширение&quot;</li>
+                <li>Выберите папку <code className="text-slate-300 bg-dark/50 px-1.5 py-0.5 rounded text-xs">nobet-extension</code> из распакованного архива</li>
+              </ol>
+            </div>
           </Card>
 
           {/* Connect Step */}
