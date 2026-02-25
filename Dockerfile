@@ -17,6 +17,13 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Placeholder env vars for build (Supabase client init at import time)
+# Real values come from .env at runtime
+ARG NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+ARG SUPABASE_SERVICE_ROLE_KEY=placeholder
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
+
 RUN npm run build
 
 # Stage 3: Runner
