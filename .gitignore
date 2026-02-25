@@ -59,5 +59,8 @@ env/
 *.log
 .cache/
 
+# VPN configs (contain private keys)
+vpn-config/
+
 # mobile / JDK
 mobile/microsoft-jdk-*.zip

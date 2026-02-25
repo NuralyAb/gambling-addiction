@@ -29,6 +29,7 @@ const protectedRoutes = [
   "/support",
   "/resources",
   "/extension",
+  "/vpn",
   "/education",
   "/sos",
   "/admin",

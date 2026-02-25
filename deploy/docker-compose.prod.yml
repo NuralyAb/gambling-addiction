@@ -22,6 +22,8 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+    volumes:
+      - ../vpn-config:/app/vpn-config:ro
     expose:
       - "3000"
     healthcheck:
