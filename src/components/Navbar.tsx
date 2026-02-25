@@ -29,6 +29,9 @@ export default function Navbar() {
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm" className="!px-2 sm:!px-3">{t("dashboard")}</Button>
               </Link>
+              <Link href="/vpn">
+                <Button variant="ghost" size="sm" className="!px-2 sm:!px-3">{t("vpn")}</Button>
+              </Link>
               <Link href="/profile">
                 <Button variant="ghost" size="sm" className="!px-2 sm:!px-3">{t("profile")}</Button>
               </Link>
