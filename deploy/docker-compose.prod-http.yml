@@ -1,0 +1,46 @@
+# ============================================
+# SafeBet AI - HTTP only (для первого запуска до получения SSL)
+# Используйте перед: sudo bash deploy/ssl-setup.sh nobet.kz
+# После SSL переключитесь на docker-compose.prod.yml
+# ============================================
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: safebet-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - safebet
+
+  nginx:
+    image: nginx:alpine
+    container_name: safebet-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx/safebet-http-only.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - safebet
+
+networks:
+  safebet:
+    driver: bridge
