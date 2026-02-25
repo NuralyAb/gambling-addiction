@@ -266,7 +266,7 @@ if USE_SKLEARN:
 
     model_json = {
         "meta": {
-            "name": "SafeBet GBM Relapse Predictor",
+            "name": "NoBet GBM Relapse Predictor",
             "version": "2.0.0",
             "algorithm": "Gradient Boosted Trees (scikit-learn)",
             "architecture": f"GBM 120×depth4 + GBM 100×depth3",
@@ -429,7 +429,7 @@ else:
 
     model_json = {
         "meta": {
-            "name": "SafeBet GBM Relapse Predictor",
+            "name": "NoBet GBM Relapse Predictor",
             "version": "2.0.0",
             "algorithm": "Gradient Boosted Stumps (pure-Python)",
             "architecture": f"GBM 80 stumps (reg) + 60 stumps (cls)",

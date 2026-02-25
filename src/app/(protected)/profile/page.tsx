@@ -211,7 +211,7 @@ export default function ProfilePage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `safebet-export-${new Date().toISOString().split("T")[0]}.json`;
+      a.download = `nobet-export-${new Date().toISOString().split("T")[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
       showMsg("Данные экспортированы");

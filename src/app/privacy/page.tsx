@@ -66,7 +66,7 @@ export default function PrivacyPage() {
             Политика конфиденциальности
           </h1>
           <p className="text-slate-400 max-w-2xl">
-            SafeBet AI серьёзно относится к защите ваших персональных данных. В этом документе
+            NoBet серьёзно относится к защите ваших персональных данных. В этом документе
             мы подробно объясняем, какие данные мы собираем, как их используем и как вы можете
             управлять своей информацией.
           </p>
@@ -212,7 +212,7 @@ export default function PrivacyPage() {
               <Card>
                 <SectionHeading number={3} title="AI и обработка данных" />
                 <p className="text-slate-400 mb-4">
-                  SafeBet AI использует несколько уровней искусственного интеллекта для
+                  NoBet использует несколько уровней искусственного интеллекта для
                   предоставления максимально качественной поддержки.
                 </p>
                 <div className="space-y-4">
@@ -479,7 +479,7 @@ export default function PrivacyPage() {
                     </ul>
                   </div>
                   <p className="text-sm text-slate-500">
-                    Расширение передаёт данные на сервер SafeBet AI только при наличии активной
+                    Расширение передаёт данные на сервер NoBet только при наличии активной
                     авторизации. Вы можете удалить расширение в любой момент — все локальные
                     данные будут удалены автоматически.
                   </p>
@@ -505,8 +505,8 @@ export default function PrivacyPage() {
                       </div>
                       <div>
                         <p className="text-sm text-slate-500">Email</p>
-                        <a href="mailto:privacy@safebet-ai.com" className="text-accent hover:underline text-sm">
-                          privacy@safebet-ai.com
+                        <a href="mailto:privacy@nobet.kz" className="text-accent hover:underline text-sm">
+                          privacy@nobet.kz
                         </a>
                       </div>
                     </div>
@@ -520,8 +520,8 @@ export default function PrivacyPage() {
                       </div>
                       <div>
                         <p className="text-sm text-slate-500">Telegram</p>
-                        <a href="https://t.me/safebet_support" className="text-accent hover:underline text-sm">
-                          @safebet_support
+                        <a href="https://t.me/nobet_support" className="text-accent hover:underline text-sm">
+                          @nobet_support
                         </a>
                       </div>
                     </div>

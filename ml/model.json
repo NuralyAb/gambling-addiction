@@ -1,6 +1,6 @@
 {
   "meta": {
-    "name": "SafeBet GBM Relapse Predictor",
+    "name": "NoBet GBM Relapse Predictor",
     "version": "2.0.0",
     "algorithm": "Gradient Boosted Trees (scikit-learn)",
     "architecture": "GBM 120×depth4 + GBM 100×depth3",

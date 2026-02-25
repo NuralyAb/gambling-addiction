@@ -192,7 +192,7 @@ export default function ExtensionPage() {
                 </svg>
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-white">SafeBet Shield</h2>
+                <h2 className="text-lg font-semibold text-white">NoBet Shield</h2>
                 <p className="text-sm text-slate-400 mt-1">
                   Расширение автоматически блокирует доступ к азартным сайтам и 
                   отправляет события в вашу систему мониторинга. Каждая попытка 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "SafeBet Shield",
+  "name": "NoBet Shield",
   "description": "Блокировка азартных сайтов и мониторинг попыток доступа",
   "version": "1.0.0",
   "permissions": [

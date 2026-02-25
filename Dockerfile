@@ -1,5 +1,5 @@
 # ============================================
-# SafeBet AI - Production Dockerfile
+# NoBet - Production Dockerfile
 # ============================================
 
 # Stage 1: Dependencies

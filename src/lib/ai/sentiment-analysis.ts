@@ -183,7 +183,7 @@ export function analyzeTrend(
 }
 
 export const MODULE_META = {
-  name: "SafeBet NLP Sentiment Analyzer",
+  name: "NoBet NLP Sentiment Analyzer",
   version: "1.0.0",
   lexicon: "AFINN-165 + Russian gambling vocabulary (80+ terms)",
   independent: true,

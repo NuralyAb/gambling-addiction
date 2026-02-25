@@ -56,12 +56,12 @@ async function getApiBase() {
 async function sendBlockEvent(domain, url) {
   const token = await getToken();
   if (!token) {
-    console.log("[SafeBet] No token, skipping:", domain);
+    console.log("[NoBet] No token, skipping:", domain);
     return;
   }
 
   const base = await getApiBase();
-  console.log("[SafeBet] Sending block event:", domain);
+  console.log("[NoBet] Sending block event:", domain);
 
   for (const tryBase of [base, ...API_BASE_URLS.filter(b => b !== base)]) {
     try {
@@ -76,15 +76,15 @@ async function sendBlockEvent(domain, url) {
         }),
       });
       if (res.ok) {
-        console.log("[SafeBet] Event sent OK to", tryBase);
+        console.log("[NoBet] Event sent OK to", tryBase);
         if (tryBase !== base) {
           chrome.storage.local.set({ sba_api_base: tryBase });
         }
         return;
       }
-      console.log("[SafeBet] Server responded:", res.status);
+      console.log("[NoBet] Server responded:", res.status);
     } catch (err) {
-      console.log("[SafeBet] Failed:", tryBase, err.message);
+      console.log("[NoBet] Failed:", tryBase, err.message);
     }
   }
 }
@@ -125,7 +125,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(function(details) {
   if (details.frameId !== 0) return;
   var domain = extractDomain(details.url);
   if (domain && isGamblingDomain(domain)) {
-    console.log("[SafeBet] BLOCKED navigation:", domain);
+    console.log("[NoBet] BLOCKED navigation:", domain);
     sendBlockEvent(domain, details.url);
     updateBadge();
   }
@@ -135,7 +135,7 @@ chrome.webNavigation.onCommitted.addListener(function(details) {
   if (details.frameId !== 0) return;
   var domain = extractDomain(details.url);
   if (domain && isGamblingDomain(domain)) {
-    console.log("[SafeBet] BLOCKED committed:", domain);
+    console.log("[NoBet] BLOCKED committed:", domain);
     sendBlockEvent(domain, details.url);
     updateBadge();
   }
@@ -145,7 +145,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
   if (changeInfo.url) {
     var domain = extractDomain(changeInfo.url);
     if (domain && isGamblingDomain(domain)) {
-      console.log("[SafeBet] BLOCKED tab update:", domain);
+      console.log("[NoBet] BLOCKED tab update:", domain);
       sendBlockEvent(domain, changeInfo.url);
       updateBadge();
     }
@@ -161,4 +161,4 @@ chrome.runtime.onStartup.addListener(async function() {
   }
 });
 
-console.log("[SafeBet] Service worker loaded! Monitoring " + GAMBLING_DOMAINS.length + " domains");
+console.log("[NoBet] Service worker loaded! Monitoring " + GAMBLING_DOMAINS.length + " domains");

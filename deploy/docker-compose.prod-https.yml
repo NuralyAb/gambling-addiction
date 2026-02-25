@@ -1,5 +1,5 @@
 # ============================================
-# SafeBet AI - Production HTTPS (nobet.kz)
+# NoBet - Production HTTPS (nobet.kz)
 # Алиас для docker-compose.prod.yml
 # ============================================
 
@@ -8,7 +8,7 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    container_name: safebet-app
+    container_name: nobet-app
     restart: unless-stopped
     env_file:
       - ../.env
@@ -24,25 +24,25 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - safebet
+      - nobet
 
   nginx:
     image: nginx:alpine
-    container_name: safebet-nginx
+    container_name: nobet-nginx
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/safebet.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/nobet.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /var/www/certbot:/var/www/certbot:ro
     depends_on:
       app:
         condition: service_healthy
     networks:
-      - safebet
+      - nobet
 
 networks:
-  safebet:
+  nobet:
     driver: bridge

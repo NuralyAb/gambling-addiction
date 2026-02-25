@@ -235,4 +235,4 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
-console.log('SafeBet AI extension loaded. Blocking', BLOCKED_DOMAINS.size, 'domains.');
+console.log('NoBet extension loaded. Blocking', BLOCKED_DOMAINS.size, 'domains.');

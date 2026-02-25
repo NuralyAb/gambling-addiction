@@ -99,7 +99,7 @@ export default function LandingPage() {
             viewport={{ once: true, margin: "-80px" }}
             className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-4"
           >
-            Как SafeBet AI помогает
+            Как NoBet помогает
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 12 }}
@@ -165,7 +165,7 @@ export default function LandingPage() {
               </h2>
               <p className="text-slate-400 max-w-xl mx-auto mb-10 leading-relaxed">
                 Игровая зависимость — это не слабость характера. Это состояние, с которым можно справиться
-                при правильной поддержке. SafeBet AI создан, чтобы быть вашим тихим союзником.
+                при правильной поддержке. NoBet создан, чтобы быть вашим тихим союзником.
               </p>
               <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto">
                 <div className="rounded-xl py-4 px-2 bg-white/[0.02] border border-white/5">

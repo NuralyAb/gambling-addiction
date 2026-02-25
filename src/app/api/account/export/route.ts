@@ -74,7 +74,7 @@ export async function GET() {
   return new NextResponse(JSON.stringify(exportData, null, 2), {
     headers: {
       "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="safebet-export-${dateStr}.json"`,
+      "Content-Disposition": `attachment; filename="nobet-export-${dateStr}.json"`,
     },
   });
 }

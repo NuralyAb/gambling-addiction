@@ -121,7 +121,7 @@ export async function POST(req: Request) {
       const lastPreventive = user.last_preventive_sent ? new Date(user.last_preventive_sent).getTime() : 0;
       if (Date.now() - lastPreventive < 12 * 3600000) continue;
 
-      const appUrl = process.env.NEXTAUTH_URL || "https://safebet-ai.vercel.app";
+      const appUrl = process.env.NEXTAUTH_URL || "https://nobet.kz";
       const text = [
         "🧠 <b>Превентивное уведомление</b>",
         "",

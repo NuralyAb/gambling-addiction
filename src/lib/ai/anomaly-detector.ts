@@ -234,7 +234,7 @@ export function analyzeAnomalies(data: BehaviorData): AnomalyReport {
 }
 
 export const MODULE_META = {
-  name: "SafeBet Anomaly Detector",
+  name: "NoBet Anomaly Detector",
   version: "1.0.0",
   method: "Z-Score Statistical Analysis",
   thresholds: { warning: Z_THRESHOLD_WARNING, critical: Z_THRESHOLD_CRITICAL },

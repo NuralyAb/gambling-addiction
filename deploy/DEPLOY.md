@@ -1,4 +1,4 @@
-# Деплой SafeBet AI на Ubuntu 20 (nobet.kz)
+# Деплой NoBet на Ubuntu 20 (nobet.kz)
 
 Полная инструкция по развёртыванию на VPS/сервере с Ubuntu 20.04.
 
@@ -107,10 +107,10 @@ docker compose -f deploy/docker-compose.prod-http.yml --env-file .env up -d --bu
 
 ```bash
 # Логи приложения
-docker logs -f safebet-app
+docker logs -f nobet-app
 
 # Логи nginx
-docker logs -f safebet-nginx
+docker logs -f nobet-nginx
 
 # Остановка
 docker compose -f deploy/docker-compose.prod.yml down
@@ -143,7 +143,7 @@ sudo ufw enable
 ```bash
 sudo crontab -e
 # Добавьте строку (обновление каждые 12 часов):
-0 */12 * * * certbot renew --quiet --deploy-hook "docker restart safebet-nginx"
+0 */12 * * * certbot renew --quiet --deploy-hook "docker restart nobet-nginx"
 ```
 
 ---

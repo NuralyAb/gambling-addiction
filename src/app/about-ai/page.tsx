@@ -45,7 +45,7 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 const aiModules = [
   {
     title: "Локальная ML модель",
-    tech: "SafeBet GBM Relapse Predictor",
+    tech: "NoBet GBM Relapse Predictor",
     description: "Gradient Boosted Trees (120+100 деревьев) для предсказания дней до срыва на основе поведенческих паттернов. MAE=3.17 дн., R²=0.865",
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@ const neuralFeatures = [
 ];
 
 const techStack = [
-  { tech: "SafeBet GBM Relapse Predictor", purpose: "ML модель для предсказания дней до срыва (GBM 120+100 деревьев)", independent: true },
+  { tech: "NoBet GBM Relapse Predictor", purpose: "ML модель для предсказания дней до срыва (GBM 120+100 деревьев)", independent: true },
   { tech: "sentiment (AFINN-165)", purpose: "NLP-анализ текста дневника", independent: true },
   { tech: "Z-score алгоритм", purpose: "Детектор аномалий", independent: true },
   { tech: "OpenAI GPT-4o", purpose: "AI-чат поддержка", independent: false },
@@ -155,7 +155,7 @@ export default function AboutAIPage() {
           transition={{ duration: 0.6, delay: 0.1 }}
         >
           AI-технологии{" "}
-          <span className="text-accent">SafeBet</span>
+          <span className="text-accent">NoBet</span>
         </motion.h1>
 
         <motion.p
@@ -254,7 +254,7 @@ export default function AboutAIPage() {
             Границы AI и роль специалистов
           </motion.h2>
           <motion.p variants={fadeUp} custom={1} className="text-slate-400 text-center max-w-2xl mx-auto mb-8">
-            SafeBet AI — инструмент поддержки, а не замена профессиональной помощи
+            NoBet AI — инструмент поддержки, а не замена профессиональной помощи
           </motion.p>
           <motion.div variants={fadeUp} custom={2} className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <Card className="border-accent/20">
@@ -991,7 +991,7 @@ export default function AboutAIPage() {
             Технический стек
           </motion.h2>
           <motion.p variants={fadeUp} custom={1} className="text-slate-400 text-center max-w-2xl mx-auto mb-12">
-            Полный обзор AI-технологий, используемых в SafeBet AI
+            Полный обзор AI-технологий, используемых в NoBet AI
           </motion.p>
         </motion.div>
 
@@ -1069,7 +1069,7 @@ export default function AboutAIPage() {
               <div>
                 <h3 className="text-white font-semibold mb-1">Итого</h3>
                 <p className="text-slate-400 text-sm leading-relaxed">
-                  SafeBet AI использует <span className="text-accent font-medium">3 полностью независимых AI-модуля</span> (ML модель,
+                  NoBet AI использует <span className="text-accent font-medium">3 полностью независимых AI-модуля</span> (ML модель,
                   sentiment, Z-score), работающих локально без внешних API, и <span className="text-purple-400 font-medium">1 внешний
                   модуль</span> (GPT-4o) для чат-поддержки с полной анонимизацией данных.
                   Это обеспечивает баланс между мощностью AI и конфиденциальностью пользователей.

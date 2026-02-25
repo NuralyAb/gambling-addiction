@@ -1,5 +1,5 @@
 # ============================================
-# SafeBet AI - Docker Compose для деплоя
+# NoBet - Docker Compose для деплоя
 # ============================================
 # Использование:
 #   1. Создайте .env с переменными (см. ниже)
@@ -18,7 +18,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: safebet-ai
+    container_name: nobet-app
     restart: unless-stopped
     ports:
       - "3000:3000"

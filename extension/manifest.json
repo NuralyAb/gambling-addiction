@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "SafeBet AI — Блокировка азартных сайтов",
+  "name": "NoBet — Блокировка азартных сайтов",
   "version": "1.0.0",
   "description": "Блокирует gambling-сайты и помогает справиться с игровой зависимостью",
   "permissions": [

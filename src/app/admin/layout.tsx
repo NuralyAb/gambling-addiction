@@ -12,7 +12,7 @@ export default function AdminLayout({
     <div className="min-h-screen bg-dark flex flex-col">
       <header className="border-b border-dark-border bg-dark/80 backdrop-blur-sm sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="font-semibold text-white">SafeBet Admin</span>
+          <span className="font-semibold text-white">NoBet Admin</span>
           <div className="flex items-center gap-4">
             <Link
               href="/"
