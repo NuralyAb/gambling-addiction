@@ -231,12 +231,14 @@ docker exec -it nobet-wireguard /app/show-peer 4 5
 - Проверьте firewall: `sudo ufw status`
 - Проверьте, что порт 51820 открыт: `nc -zv ваш-сервер 51820` (если nc установлен)
 
-### Pi-hole не открывается
+### Pi-hole не открывается / 404 при логине
 
 1. **Откройте порт 5181 в firewall:** `sudo ufw allow 5181/tcp && sudo ufw reload`
 2. **Проверьте контейнер:** `docker ps | grep pihole` — должен быть Up
 3. **Логи:** `docker logs nobet-pihole --tail 30`
 4. **Облачный провайдер:** откройте порт 5181 в Security Group.
+5. **404 на /api/auth:** Pi-hole v6 и NextAuth оба используют /api/auth. Nginx переписывает пути в HTML. После изменений в nginx: `docker restart nobet-nginx`. Очистите кэш браузера (Ctrl+Shift+R).
+6. **Прямой доступ:** если https://nobet.kz/adguard/ не работает — откройте `http://ваш-сервер:5181` (порт должен быть открыт).
 
 ### DNS не блокирует
 - В Pi-hole: **Group management** → **Adlists** — проверьте, что блоклист добавлен
