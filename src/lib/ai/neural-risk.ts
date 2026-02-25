@@ -186,16 +186,22 @@ export function predictRisk(features: BehavioralFeatures): NeuralPrediction {
 
   const featureVec = featureNames.map((name) => featureMap[name] ?? 0);
 
-  // ── Regression: predicted days until relapse ──
+  // ── Regression: сырой вывод модели масштабируем в 1–7 дней (чтобы было разнообразие, а не всегда 7) ──
   const rawDays = gbmRegress(model.regressor, featureVec);
-  const daysUntilRelapse = Math.max(1, Math.min(90, Math.round(rawDays)));
+  const RAW_MIN = 1;
+  const RAW_MAX = 30;   // типичный диапазон выхода GBM
+  const DISPLAY_MIN = 1;
+  const DISPLAY_MAX = 7;
+  const clampedRaw = Math.max(RAW_MIN, Math.min(RAW_MAX, rawDays));
+  const scaled = DISPLAY_MIN + ((clampedRaw - RAW_MIN) / (RAW_MAX - RAW_MIN)) * (DISPLAY_MAX - DISPLAY_MIN);
+  const daysUntilRelapse = Math.max(1, Math.min(7, Math.round(scaled)));
 
-  // ── Classifier: probability of "relapse soon" (21-day window) ──
+  // ── Classifier: probability of "relapse soon" ──
   const relapseProbability = Math.round(gbmClassify(model.classifier, featureVec) * 1000) / 1000;
 
-  // ── Convert regression output to 0-100 risk score ──
-  // daysUntilRelapse=1 → risk=100, daysUntilRelapse=60+ → risk≈0
-  const riskProbability = Math.max(0, Math.min(1, 1 - (daysUntilRelapse - 1) / 59));
+  // ── Risk score 0–100: чем меньше дней до рецидива, тем выше риск (шкала 1–7 дней) ──
+  // daysUntilRelapse=1 → risk=100%, daysUntilRelapse=7 → risk=0%
+  const riskProbability = Math.max(0, Math.min(1, 1 - (daysUntilRelapse - 1) / 6));
   const riskScore = Math.round(riskProbability * 100);
 
   let riskLevel: "LOW" | "MEDIUM" | "HIGH";

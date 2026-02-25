@@ -392,26 +392,20 @@ export default function AIInsightsPage() {
               {/* Days until relapse banner */}
               {nn.prediction.daysUntilRelapse !== undefined && (
                 <div className={`mb-6 p-4 rounded-xl border flex items-center gap-4 ${
-                  nn.prediction.daysUntilRelapse <= 10
+                  nn.prediction.daysUntilRelapse <= 5
                     ? "bg-red-500/5 border-red-500/20"
-                    : nn.prediction.daysUntilRelapse <= 25
+                    : nn.prediction.daysUntilRelapse <= 10
                       ? "bg-amber-500/5 border-amber-500/20"
                       : "bg-emerald-500/5 border-emerald-500/20"
                 }`}>
                   <div className={`text-4xl font-bold tabular-nums ${
-                    nn.prediction.daysUntilRelapse <= 10 ? "text-red-400" :
-                    nn.prediction.daysUntilRelapse <= 25 ? "text-amber-400" : "text-emerald-400"
+                    nn.prediction.daysUntilRelapse <= 5 ? "text-red-400" :
+                    nn.prediction.daysUntilRelapse <= 10 ? "text-amber-400" : "text-emerald-400"
                   }`}>
                     {nn.prediction.daysUntilRelapse}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">дней до предполагаемого срыва</p>
-                    <p className="text-xs text-slate-500">
-                      Предсказание GBM · Обучена на 2000 записях ·{" "}
-                      {nn.prediction.relapseProbability !== undefined
-                        ? `P(срыв скоро) = ${Math.round(nn.prediction.relapseProbability * 100)}%`
-                        : ""}
-                    </p>
                   </div>
                 </div>
               )}

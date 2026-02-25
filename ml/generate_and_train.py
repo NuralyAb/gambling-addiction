@@ -19,8 +19,8 @@ Features:
   total_episodes_30    — total gambling episodes in last 30 days
 
 Targets:
-  days_until_relapse   — regression: days until next gambling episode (1-90)
-  relapse_7d           — classification: will relapse within 7 days (0/1)
+  days_until_relapse   — regression: days until next gambling episode (1-20)
+  relapse_7d           — classification: will relapse within 10 days (0/1)
 
 Model: GradientBoostingRegressor + GradientBoostingClassifier
 Export: JSON trees for zero-dependency TypeScript inference
@@ -28,10 +28,11 @@ Export: JSON trees for zero-dependency TypeScript inference
 
 import json
 import math
-import random
-import csv
 import os
+import random
+import shutil
 import sys
+import csv
 
 # ── try sklearn, fallback to pure-Python implementation ──
 try:
@@ -43,10 +44,10 @@ try:
         roc_auc_score, accuracy_score, classification_report
     )
     USE_SKLEARN = True
-    print("✓ scikit-learn available — using GradientBoostedTrees")
+    print("OK scikit-learn available - using GradientBoostedTrees")
 except ImportError:
     USE_SKLEARN = False
-    print("⚠ scikit-learn not found — using pure-Python fallback GBM")
+    print("WARN scikit-learn not found - using pure-Python fallback GBM")
 
 random.seed(42)
 
@@ -55,7 +56,7 @@ random.seed(42)
 # Based on: Lesieur & Blume SOGS, PGSI scale, and addiction relapse literature
 # ─────────────────────────────────────────────────────────────────────────────
 
-N = 2000
+N = 10000
 
 def gauss_clamp(mu, sigma, lo, hi):
     """Gaussian sample clamped to [lo, hi]."""
@@ -127,15 +128,14 @@ def generate_sample():
     # Net risk: 0 = very safe, 1 = imminent relapse
     net_risk = max(0.0, min(1.0, risk_score * 0.7 - protection_score * 0.3 + 0.2))
 
-    # Days = strong inverse function of net_risk + small noise (±3 days)
-    # At net_risk=0.0: ~60 days;  at net_risk=1.0: ~2 days
-    deterministic_days = 60.0 * (1.0 - net_risk) + 2.0
-    noise = random.gauss(0, 3.5)
-    days_until_relapse = max(1, min(90, int(round(deterministic_days + noise))))
+    # Days = strong inverse function of net_risk, range 1-20 only
+    # At net_risk=0.0: ~20 days;  at net_risk=1.0: ~1 day. Adequate spread 1-20.
+    deterministic_days = 20.0 * (1.0 - net_risk) + 1.0
+    noise = random.gauss(0, 1.5)
+    days_until_relapse = max(1, min(20, int(round(deterministic_days + noise))))
 
-    # ── Secondary target: high risk = relapse within 21 days (1 = yes)
-    # Using 21-day threshold (3 weeks) as clinically meaningful "high risk" window
-    relapse_7d = 1 if days_until_relapse <= 21 else 0
+    # ── Secondary target: high risk = relapse within 10 days (1 = yes)
+    relapse_7d = 1 if days_until_relapse <= 10 else 0
 
     return {
         "streak_days": streak_days,
@@ -159,7 +159,7 @@ print(f"  Generated {N} samples")
 # ── Basic stats ──
 relapse_rate = sum(r["relapse_soon"] for r in rows) / N
 avg_days = sum(r["days_until_relapse"] for r in rows) / N
-print(f"  21-day relapse rate: {relapse_rate:.1%}")
+print(f"  10-day relapse rate: {relapse_rate:.1%}")
 print(f"  Avg days until relapse: {avg_days:.1f}")
 
 # ── Save CSV ──
@@ -170,7 +170,7 @@ with open(csv_path, "w", newline="", encoding="utf-8") as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(rows)
-print(f"  Saved → {csv_path}")
+print(f"  Saved -> {csv_path}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FEATURE NAMES & MATRIX
@@ -209,13 +209,13 @@ if USE_SKLEARN:
         X_np, y_reg_np, y_cls_np, test_size=0.2, random_state=42
     )
 
-    print("\nTraining GradientBoostingRegressor (days_until_relapse)...")
+    print("\nTraining GradientBoostingRegressor (days_until_relapse, 1-20 days)...")
     reg = GradientBoostingRegressor(
-        n_estimators=120,
-        max_depth=4,
-        learning_rate=0.08,
-        subsample=0.8,
-        min_samples_leaf=10,
+        n_estimators=150,
+        max_depth=5,
+        learning_rate=0.06,
+        subsample=0.85,
+        min_samples_leaf=15,
         random_state=42,
         loss="squared_error",
     )
@@ -225,13 +225,13 @@ if USE_SKLEARN:
     r2 = r2_score(yr_te, yr_pred)
     print(f"  MAE: {mae:.2f} days   R²: {r2:.3f}")
 
-    print("Training GradientBoostingClassifier (relapse_7d)...")
+    print("Training GradientBoostingClassifier (relapse within 10d)...")
     clf = GradientBoostingClassifier(
-        n_estimators=100,
-        max_depth=3,
-        learning_rate=0.1,
-        subsample=0.8,
-        min_samples_leaf=10,
+        n_estimators=120,
+        max_depth=4,
+        learning_rate=0.08,
+        subsample=0.85,
+        min_samples_leaf=15,
         random_state=42,
     )
     clf.fit(X_tr, yc_tr)
@@ -240,7 +240,7 @@ if USE_SKLEARN:
     auc = roc_auc_score(yc_te, yc_pred_proba)
     acc = accuracy_score(yc_te, yc_pred)
     print(f"  AUC: {auc:.3f}   Accuracy: {acc:.3f}")
-    print(classification_report(yc_te, yc_pred, target_names=["No relapse (21d)", "Relapse (21d)"]))
+    print(classification_report(yc_te, yc_pred, target_names=["No relapse (10d)", "Relapse (10d)"]))
 
     # ── Feature importance ──
     fi_reg = {FEATURE_NAMES[i]: float(reg.feature_importances_[i]) for i in range(len(FEATURE_NAMES))}
@@ -269,7 +269,7 @@ if USE_SKLEARN:
             "name": "SafeBet GBM Relapse Predictor",
             "version": "2.0.0",
             "algorithm": "Gradient Boosted Trees (scikit-learn)",
-            "architecture": f"GBM 120×depth4 + GBM 100×depth3",
+            "architecture": f"GBM 150×depth5 + GBM 120×depth4",
             "parameters": sum(
                 est[0].tree_.node_count for est in reg.estimators_
             ) + sum(
@@ -470,7 +470,15 @@ with open(model_path, "w", encoding="utf-8") as f:
     json.dump(model_json, f, indent=2, ensure_ascii=False)
 
 size_kb = os.path.getsize(model_path) / 1024
-print(f"\n✓ Model saved → {model_path}  ({size_kb:.0f} KB)")
+print(f"\nOK Model saved -> {model_path}  ({size_kb:.0f} KB)")
+
+# Copy to app bundle (Next.js / API uses src/lib/ai/relapse_model.json)
+app_model_path = os.path.join(out_dir, "..", "src", "lib", "ai", "relapse_model.json")
+app_model_dir = os.path.dirname(app_model_path)
+os.makedirs(app_model_dir, exist_ok=True)
+shutil.copy2(model_path, app_model_path)
+print(f"  Copied -> {app_model_path}")
+
 print(f"  Trees: {model_json['regressor']['n_estimators']} regressor + {model_json['classifier']['n_estimators']} classifier")
 print(f"  Parameters: {model_json['meta']['parameters']}")
 print("\nDone!")
